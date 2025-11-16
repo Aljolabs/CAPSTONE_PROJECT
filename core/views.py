@@ -2994,7 +2994,7 @@ def admin_logistics(request):
     if not (hasattr(request.user, 'profile') and request.user.profile.is_admin):
         return redirect('user_dashboard')
     
-    from .models import BookingInventory, InventoryItem
+    from .models import BookingInventory, InventoryTransaction
     
     # Get confirmed bookings
     confirmed_bookings = Booking.objects.filter(status='confirmed').select_related(
@@ -3007,14 +3007,19 @@ def admin_logistics(request):
     ).distinct().select_related('customer', 'service').order_by('-date')
     
     # Get available inventory items
-    available_items = InventoryItem.objects.filter(
-        current_stock__gt=0
-    ).select_related('category').order_by('category__name', 'name')
-    
+    available_items = InventoryTransaction.objects.filter(
+        item__current_stock__gt=0
+    ).select_related('item__category').order_by('item__category', 'item__category__name')
+        
+    allocated_items = BookingInventory.objects.all()
+
     context = {
+        'active_bookings': 0,
+        'pending_returns': 0,
         'confirmed_bookings': confirmed_bookings,
         'bookings_with_inventory': bookings_with_inventory,
-        'available_items': available_items,
+        'transactions': available_items,
+        'allocated_items': allocated_items,
     }
     
     return render(request, 'admin/logistics.html', context)

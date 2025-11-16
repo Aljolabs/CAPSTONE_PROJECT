@@ -236,20 +236,20 @@ class Feedback(models.Model):
 
 # Inventory Management Models
 class InventoryCategory(models.Model):
-    CATEGORY_CHOICES = [
-        ('cleaning_agents', 'Cleaning Agents'),
-        ('tools', 'Tools'),
-        ('equipment', 'Equipment'),
-    ]
+    # CATEGORY_CHOICES = [
+    #     ('cleaning_agents', 'Cleaning Agents'),
+    #     ('tools', 'Tools'),
+    #     ('equipment', 'Equipment'),
+    # ]
     
-    name = models.CharField(max_length=50, choices=CATEGORY_CHOICES, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, null=True)
     
     class Meta:
         verbose_name_plural = "Inventory Categories"
     
     def __str__(self):
-        return self.get_name_display()
+        return self.name
 
 
 class InventoryItem(models.Model):
@@ -268,7 +268,7 @@ class InventoryItem(models.Model):
         unique_together = ('category', 'name')
     
     def __str__(self):
-        return f"{self.name} ({self.category.get_name_display()})"
+        return f"{self.name} ({self.category})"
     
     @property
     def is_low_stock(self):
