@@ -574,6 +574,26 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Graph for analytics -->
+                            <!-- Search Chartjs to navigate  -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="analytics-card">
+                                        <canvas id="bar"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="analytics-card">
+                                        <canvas id="line"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="analytics-card">
+                                        <canvas id="pie"></canvas>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Analytics Tables -->
                             <div class="row">
@@ -776,6 +796,58 @@
         </div>
     </div>
 </div>
+
+<!-- This Area is the template for graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function generateGraph(id, type, data){
+        /*
+        * This is the format
+        * id:   comes from the <canvas id='the_id_here'></canvas>
+        * type: graph type -> bar, line pie and such
+        * data: {"label": [], "value": []}
+        */
+        const ctx = document.getElementById(id)
+        new Chart(ctx, {
+        type: type,
+        data: {
+        labels: data['label'],
+        datasets: [{
+            label: 'Mga nakakamiss sa akin',
+            data: data['value'],
+            borderWidth: 1
+        }]
+        },
+        options: {
+        scales: {
+            y: {
+            beginAtZero: true
+            }
+        }
+        }
+    });
+    }
+</script>
+
+<!-- ChartJs configurations -->
+<!-- Search "Graph for analytics" for faster navigation -->
+
+<script>
+    generateGraph("bar", "bar", {
+        "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        "value": [12, 19, 3, 5, 2, 3]
+    })
+    
+    generateGraph("line", "line", {
+        "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        "value": [12, 19, 3, 5, 2, 3]
+    })
+    generateGraph("pie", "pie", {
+        "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        "value": [12, 19, 3, 5, 2, 3]
+    })
+
+</script>
 
 <!-- optional na modal kasi hindi nagana logout -->
 <!-- Logout Modal -->
