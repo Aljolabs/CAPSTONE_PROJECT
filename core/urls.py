@@ -91,4 +91,6 @@ urlpatterns = [
     path('admin-inventory/transactions/<int:item_id>/', views.admin_inventory_transactions, name='admin_inventory_transactions'),
     path('admin-logistics/', views.admin_logistics, name='admin_logistics'),
     
+    # Test Url
+    path('test-page/', views.staff_suggestion_view, name='staff_suggestion')
 ]

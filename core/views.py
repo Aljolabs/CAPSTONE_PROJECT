@@ -3023,3 +3023,31 @@ def admin_logistics(request):
     }
     
     return render(request, 'admin/logistics.html', context)
+
+def staff_suggestion_view(request):
+    # This function is used for testing
+    from .models import Feedback, Service, UserProfile
+    from .predictions import staff_computation
+    from django.http import HttpResponse
+    from django.core import serializers
+    import json
+    service = Service.objects.get(name__iexact="Disinfection ")
+    ratings = Feedback.objects.filter(service=service.id)
+
+    # Queryset to json
+    json_data = json.loads(serializers.serialize('json', ratings))
+    result = []
+    for i in json_data:
+        result.append(i['fields'])
+    
+    suggested_data = staff_computation(result, service.id)
+
+    new_data = json.loads(suggested_data)
+    list_of_staffs = []
+    for i in new_data:
+        staff = UserProfile.objects.get(id__exact=i.get("assigned_staff"))
+        list_of_staffs.append(staff)
+
+    print(list_of_staffs)
+    
+    return HttpResponse("hello")

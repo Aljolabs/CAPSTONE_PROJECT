@@ -2,16 +2,28 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
-def staff_cmputation(df, employee_id):
-    employee = df[df['employee_id'] == employee_id]
+def staff_computation(data, task_name, top=5):
+    # Data to DataFrame
+    df = pd.DataFrame(data)
+    print(df)
+    
+    # Creating aggregation
+    df_task = df.groupby(['service', "assigned_staff"])["overall_rating"].mean().reset_index()
+    df_task.rename(columns={
+        "overall_rating": "avg_rating"
+    }, inplace=True)
 
-    score = 0.4 * employee['quality'].values[0] * 0.3 * employee['punctuality'].values[0] * 0.2 * employee['behavior'].values[0] * 0.1 * employee['overall'].values[0]
-    return score
+    # Suggestiom of employee based on dataset
+    subset = df_task[df_task['service'] == task_name]
 
+    # Sorting by average
+    subset = subset.sort_values("avg_rating", ascending=False)
+    return subset.head(top).to_json(orient="records")
+    
 def employeeSuggestion(df, features, target, new_employee):
     """This function creates a employee suggestion based
     on the given data. This function tries to suggests
-    who is the fit for the job.
+    who is the fit for the job . 
     """
     
     X = df[features]
