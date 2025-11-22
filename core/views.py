@@ -3046,8 +3046,14 @@ def staff_suggestion_view(request):
     list_of_staffs = []
     for i in new_data:
         staff = UserProfile.objects.get(id__exact=i.get("assigned_staff"))
-        list_of_staffs.append(staff)
-
+        info = User.objects.get(username__exact=staff.user)
+        list_of_staffs.append({
+            "username": staff.user,
+            "first_name": info.first_name,
+            "last_name": info.last_name,
+            "count": i.get("avg_rating")
+        })
+    
     print(list_of_staffs)
     
-    return HttpResponse("hello")
+    return render(request, "suggestion.html", {"lists": list_of_staffs})

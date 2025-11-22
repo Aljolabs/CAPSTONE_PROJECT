@@ -1,0 +1,18 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        {% for i in lists %}
+        <h1>{{ i.username }} {{ i.count }}</h1>
+        <h1>{{ i.first_name }} {{ i.last_name }}</h1>
+        {% endfor %}
+    </div>
+</body>
+</html>
