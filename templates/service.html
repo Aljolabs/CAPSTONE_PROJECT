@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Our Cleaning Services{% endblock %}
+{% block title %}Booking history for {{ name }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -139,17 +139,40 @@
     {% if message != "" %}
     <div class="alert alert-danger">{{ message }}</div>    
     {% else %}
-    <h1 class="service-header fw-bold">{{ name }}</h1>
+    <h1 class="service-header fw-bold">{{ name }} history</h1>
     <div class="row">
         <div class="col-lg-4 col-md-6">
-            <div class="servicep-4 h-100 w-100">
+            <!-- <div class="servicep-4 h-100 w-100">
                 <div class="service-price">₱{{ price }}</div>
                 <p class="service-description">{{ description }}</p>
                 <p class="service-duration">{{ duration }}</p>
                 <p class="service-duration">Staffs to work: {{ staffs }}</p>
-            </div>
+            </div> -->
         </div>
     </div>
+    {% if bookings %}
+        {% for book in bookings %}
+            {% if book.status == "cancelled" %}
+            <div class="alert alert-danger">
+                <h1>{{ book.customer }}</h1>
+                <h3>{{ book.status }}</h3>
+                <p>{{ book.decline_reason }}</p>
+            </div>
+            {% elif book.status == "pending" %}
+            <div class="alert alert-info">
+                <h1>{{ book.customer }}</h1>
+                <h3>{{ book.status }}</h3>
+                <p>{{ book.payment_method }}</p>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <h1>{{ book.customer }}</h1>
+                <h3>{{ book.status }}</h1>
+                <p>{{ book.payment_method }}</p>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     {% endif %}
 </div>
 {% endblock %}

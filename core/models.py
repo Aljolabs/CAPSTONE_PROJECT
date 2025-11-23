@@ -100,6 +100,9 @@ class Booking(models.Model):
             return round(hours, 2)
         return None
 
+    class Meta:
+        ordering = ['-id']
+
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)

@@ -8,6 +8,10 @@
     body {
         background-color: #f8f9fa;
     }
+
+    .pointer {
+        cursor: pointer;
+    }
     
     .dashboard-wrapper {
         display: flex;
@@ -611,7 +615,7 @@
                                                 </thead>
                                                 <tbody>
                                                     {% for service in service_bookings|slice:":5" %}
-                                                    <tr onclick="location.href = '/../service/{{service.service__name}}'">
+                                                    <tr class="pointer" onclick="location.href = '../service-history/{{service.service__name}}'">
                                                         <td>{{ service.service__name|truncatechars:20 }}</td>
                                                         <td><span class="badge bg-primary">{{ service.booking_count }}</span></td>
                                                     </tr>

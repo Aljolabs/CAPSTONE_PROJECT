@@ -3061,6 +3061,7 @@ def categorized_view(request, category):
 
     try:    
         service = Service.objects.get(name__iexact=category)
+        bookings = Booking.objects.filter(service__exact=service).all()
 
         context = {
             "message": "",
@@ -3069,10 +3070,11 @@ def categorized_view(request, category):
             "price": service.price,
             "duration": service.duration,
             "materials": service.materials,
-            "staffs": service.staff_count
+            "staffs": service.staff_count,
+            "bookings": bookings
         }
-    except:
+    except Exception as e:
         context = {
-            "message": "Not found"
+            "message": str(e)
         }
     return render(request, "service.html", context)
