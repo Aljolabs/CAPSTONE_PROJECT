@@ -3061,7 +3061,7 @@ def categorized_view(request, category):
 
     try:    
         service = Service.objects.get(name__iexact=category)
-        bookings = Booking.objects.filter(service__exact=service).all()
+        bookings = Booking.objects.filter(service__exact=service)[:10]
 
         context = {
             "message": "",
