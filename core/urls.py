@@ -90,7 +90,8 @@ urlpatterns = [
     path('admin-inventory/get-item/<int:item_id>/', views.admin_inventory_get_item, name='admin_inventory_get_item'),
     path('admin-inventory/transactions/<int:item_id>/', views.admin_inventory_transactions, name='admin_inventory_transactions'),
     path('admin-logistics/', views.admin_logistics, name='admin_logistics'),
-    
+    path('service/<str:category>', views.categorized_view, name='categorized_view'),
+   
     # Test Url
     path('test-page/', views.staff_suggestion_view, name='staff_suggestion')
 ]

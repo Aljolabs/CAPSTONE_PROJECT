@@ -611,7 +611,7 @@
                                                 </thead>
                                                 <tbody>
                                                     {% for service in service_bookings|slice:":5" %}
-                                                    <tr>
+                                                    <tr onclick="location.href = '/../service/{{service.service__name}}'">
                                                         <td>{{ service.service__name|truncatechars:20 }}</td>
                                                         <td><span class="badge bg-primary">{{ service.booking_count }}</span></td>
                                                     </tr>

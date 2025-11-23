@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Cleaning Services{% endblock %}
+
+{% block extra_css %}
+<style>
+    .service-card {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        margin-bottom: 25px;
+        background-color: white;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    }
+    
+    .service-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .service-price {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #8DC448;
+        margin-bottom: 15px;
+    }
+    
+    .btn-mopia {
+        background-color: #8DC448;
+        border-color: #8DC448;
+        color: white;
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+    
+    .btn-mopia:hover {
+        background-color: #7ab33a;
+        border-color: #7ab33a;
+        color: white;
+    }
+    
+    .service-description {
+        margin-bottom: 20px;
+        color: #666;
+    }
+    
+    .services-header {
+        margin-bottom: 3rem;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+    
+    .services-header::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: #8DC448;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .container {
+            padding: 2rem 15px;
+        }
+        
+        .services-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .services-header h1 {
+            font-size: 2rem;
+        }
+        
+        .service-card {
+            margin-bottom: 2rem;
+        }
+        
+        .service-title {
+            font-size: 1.3rem;
+        }
+        
+        .service-price {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 1rem 10px;
+        }
+        
+        .services-header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .service-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .service-title {
+            font-size: 1.2rem;
+        }
+        
+        .service-price {
+            font-size: 1rem;
+        }
+        
+        .btn-mopia {
+            width: 100%;
+        }
+        
+        .services-header::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    {% if message != "" %}
+    <div class="alert alert-danger">{{ message }}</div>    
+    {% else %}
+    <h1 class="service-header fw-bold">{{ name }}</h1>
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="servicep-4 h-100 w-100">
+                <div class="service-price">₱{{ price }}</div>
+                <p class="service-description">{{ description }}</p>
+                <p class="service-duration">{{ duration }}</p>
+                <p class="service-duration">Staffs to work: {{ staffs }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

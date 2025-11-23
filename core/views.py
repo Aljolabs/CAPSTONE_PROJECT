@@ -3028,9 +3028,9 @@ def staff_suggestion_view(request):
     # This function is used for testing
     from .models import Feedback, Service, UserProfile
     from .predictions import staff_computation
-    from django.http import HttpResponse
     from django.core import serializers
     import json
+
     service = Service.objects.get(name__iexact="Disinfection ")
     ratings = Feedback.objects.filter(service=service.id)
 
@@ -3054,6 +3054,25 @@ def staff_suggestion_view(request):
             "count": i.get("avg_rating")
         })
     
-    print(list_of_staffs)
-    
     return render(request, "suggestion.html", {"lists": list_of_staffs})
+
+def categorized_view(request, category):
+    from django.http import HttpResponse
+
+    try:    
+        service = Service.objects.get(name__iexact=category)
+
+        context = {
+            "message": "",
+            "name": service.name,
+            "description": service.description,
+            "price": service.price,
+            "duration": service.duration,
+            "materials": service.materials,
+            "staffs": service.staff_count
+        }
+    except:
+        context = {
+            "message": "Not found"
+        }
+    return render(request, "service.html", context)
