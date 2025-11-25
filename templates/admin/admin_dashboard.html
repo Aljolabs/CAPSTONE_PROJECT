@@ -592,11 +592,11 @@
                                         <canvas id="line"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <!-- <div class="col-md-4">
                                     <div class="analytics-card h-100 align-items-end">
                                         <canvas id="pie"></canvas>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             
                             <!-- Analytics Tables -->
@@ -804,12 +804,13 @@
 <!-- This Area is the template for graphs -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function generateGraph(id, type, data){
+    function generateGraph(id, type, data, label = ""){
         /*
         * This is the format
         * id:   comes from the <canvas id='the_id_here'></canvas>
         * type: graph type -> bar, line pie and such
         * data: {"label": [], "value": [], colors?: []}
+        * label: title
         */
         const ctx = document.getElementById(id)
         new Chart(ctx, {
@@ -817,7 +818,7 @@
             data: {
             labels: data['label'],
             datasets: [{
-                label: 'Mga nakakamiss sa akin',
+                label: label,
                 data: data['value'],
                 borderWidth: 1,
                 backgroundColor: data['colors'] 
@@ -834,24 +835,32 @@
     }
 </script>
 
+{{ services|json_script:"services-data" }}
+
 <!-- ChartJs configurations -->
 <!-- Search "Graph for analytics" for faster navigation -->
 
 <script>
+    const services = JSON.parse(document.getElementById("services-data").textContent);
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    console.log(services)
     generateGraph("bar", "bar", {
-        "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        "value": [12, 19, 3, 5, 2, 3]
-    })
-    
-    generateGraph("line", "line", {
-        "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        "value": [12, 19, 3, 5, 2, 3]
-    })
-    generateGraph("pie", "pie", {
-        "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        "label": services,
         "value": [12, 19, 3, 5, 2, 3],
-        "colors": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
+    }, "Monthly distribution of activity")
+
+    generateGraph("line", "line", {
+        "label": months,
+        "value": [12, 19, 3, 5, 2, 3]
     })
+    // generateGraph("pie", "pie", {
+    //     "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    //     "value": [12, 19, 3, 5, 2, 3],
+    //     "colors": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
+    // })
 
 </script>
 

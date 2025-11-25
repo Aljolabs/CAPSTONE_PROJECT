@@ -23,6 +23,7 @@ class Customer(models.Model):
     
     def __str__(self):
         return self.name
+    
 class StaffService(models.Model):
     staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name='services')
     service = models.ForeignKey('Service', on_delete=models.CASCADE, related_name='staff_members')
@@ -76,9 +77,16 @@ class Booking(models.Model):
     admin_note = models.TextField(blank=True, null=True, help_text="Admin's note about service requirements (e.g., 'We will use your water supply and electricity')")
     
     # Payment fields
+    payment = (
+        ("gcash", "GCash"),
+        ("paymaya", "Paymaya"),
+        ("bank", "Bank Transfer"),
+        ("other", "Oher"),
+    )
+    
     reference_number = models.CharField(max_length=100, blank=True, null=True, help_text="Payment reference number from GCash, PayMaya, etc.")
     downpayment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="40% downpayment amount")
-    payment_method = models.CharField(max_length=50, blank=True, null=True, help_text="Payment method used (GCash, PayMaya, etc.)")
+    payment_method = models.CharField(max_length=50, choices=payment, blank=True, null=True, help_text="Payment method used (GCash, PayMaya, etc.)")
     is_downpayment_confirmed = models.BooleanField(default=False, help_text="Whether admin has verified the downpayment")
     is_full_payment_confirmed = models.BooleanField(default=False, help_text="Whether full payment has been confirmed by staff")
     

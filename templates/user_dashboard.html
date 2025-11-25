@@ -991,11 +991,13 @@
                                     <div class="mb-3">
                                         <label for="payment_method" class="form-label">Payment Method <span class="text-danger">*</span></label>
                                         <select class="form-control" id="payment_method" name="payment_method" required>
-                                            <option value="">Select Payment Method</option>
-                                            <option value="gcash">GCash</option>
-                                            <option value="paymaya">PayMaya</option>
-                                            <option value="bank_transfer">Bank Transfer</option>
-                                            <option value="other">Other</option>
+                                            <option selected disabled>Select Payment Method</option>
+                                            {% for payment in payment_method %}
+                                                <option value="{{payment.0}}">{{payment.1}}</option>
+                                                <!-- <option value="paymaya">PayMaya</option>
+                                                <option value="bank_transfer">Bank Transfer</option>
+                                                <option value="other">Other</option> -->
+                                            {% endfor %}
                                         </select>
                                     </div>
                                     
@@ -1581,7 +1583,7 @@
             const ampm = hour >= 12 ? 'PM' : 'AM';
             const hour12 = hour % 12 || 12;
             return `${hour12}:${minutes} ${ampm}`;
-        }
+        }  
         
         // Load temporary booking data from localStorage
         const tempBooking = JSON.parse(localStorage.getItem('tempBooking'));
@@ -1768,9 +1770,10 @@
                         successToast.show();
                         
                         // Redirect to feedback page after a delay
-                        setTimeout(() => {
-                            window.location.href = `/feedback/${data.booking_id}/`;
-                        }, 2000);
+                        // Commment muna para sa next video
+                        // setTimeout(() => {
+                        //     window.location.href = `/feedback/${data.booking_id}/`;
+                        // }, 2000);
                     } else {
                         // Handle error with toast
                         console.error('Error submitting booking:', data.error);

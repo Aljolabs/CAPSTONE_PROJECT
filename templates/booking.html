@@ -722,7 +722,7 @@ date.onchange = () => {
             console.log(t)
             opt.textContent = t[1]
             // For knowing if time past by
-            
+
             const current = new Date()
             const timer = new Date(`${today} ${t[0]}`)
             if(current.getTime() <= timer.getTime()){

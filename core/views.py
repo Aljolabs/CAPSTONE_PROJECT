@@ -135,29 +135,31 @@ def booking_submit(request):
         downpayment_amount = service.price * Decimal('0.4')  # Calculate 40% downpayment using Decimal
         
         # Create or update customer
-        customers = Customer.objects.get(user__exact=request.user if request.user.is_authenticated else None)
-        print(customers)
-        if customers == None:
-            customer, created = Customer.objects.get_or_create(
-                email=email,
-                defaults={
-                    'name': name,
-                    'phone': phone,
-                    'address': address,
-                    'user': request.user if request.user.is_authenticated else None
-                }
-            )
-            
-            if not created:
-                customer.name = name
-                customer.phone = phone
-                customer.address = address
-                customer.save()
-                customers = customer
+        if not request.user.is_authenticated:
+            raise Exception("User is not logged in")
+        # customers = Customer.objects.get(user__exact=request.user)
+        # print(customers)
+        # if customers == None:
+        customer, created = Customer.objects.get_or_create(
+            email=email,
+            defaults={
+                'name': name,
+                'phone': phone,
+                'address': address,
+                'user': request.user
+            }
+        )
+        
+        if not created:
+            customer.name = name
+            customer.phone = phone
+            customer.address = address
+            customer.save()
+            # customers = customer
             
         # Create the booking with user note and payment information
         booking = Booking.objects.create(
-            customer=customers,
+            customer=customer,
             service=service,
             destination=address,
             date=date,
@@ -609,6 +611,7 @@ def user_dashboard(request):
         'services': services,
         'notifications': notifications,
         'notifications_count': notifications_count,
+        'payment_method': Booking.payment,
         'db_ready': booking_table_exists and profile_table_exists
     })
 
@@ -632,7 +635,7 @@ def admin_dashboard(request):
         total_bookings = Booking.objects.all().count()
         pending_bookings = Booking.objects.filter(status='pending').count()
         completed_bookings = Booking.objects.filter(status='completed').count()
-        
+
         # Time-based analytics
         # This Year
         year_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
@@ -749,7 +752,7 @@ def admin_dashboard(request):
         recent_bookings = paginator.get_page(page_number)
             
         customers = Customer.objects.all()
-        services = Service.objects.all()
+        services = list(Service.objects.values_list('name', flat=True))
 
         return render(request, 'admin/admin_dashboard.html', {
             'recent_bookings': recent_bookings,
