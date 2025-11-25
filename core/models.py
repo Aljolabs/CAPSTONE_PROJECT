@@ -46,18 +46,19 @@ class StaffService(models.Model):
         super().save(*args, **kwargs)
 
 class Booking(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, null=True, blank=True, default=1, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
     decline_reason = models.TextField(blank=True, null=True)
-    assigned_staff = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_bookings')
+    assigned_staff = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='assigned_bookings')
     status_choices = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ]
+    destination = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=status_choices, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     

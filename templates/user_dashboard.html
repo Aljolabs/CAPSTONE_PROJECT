@@ -811,7 +811,7 @@
                                 <div class="mb-3">
                                     <label for="time" class="form-label">Time</label>
                                     <select class="form-select" id="time" name="time" required>
-                                        <option value="">Select a time</option>
+                                        <option value="" selected disabled>Select a time</option>
                                         <option value="08:00:00">8:00 AM</option>
                                         <option value="10:00:00">10:00 AM</option>
                                         <option value="12:00:00">12:00 PM</option>
@@ -2430,6 +2430,54 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+
+const date = document.getElementById("date")
+const today = new Date().toISOString().split('T')[0]
+date.setAttribute("min", today)
+
+date.onchange = () => {
+    const time = document.getElementById("time")
+    time.innerHTML = "<option value='' selected disabled>Select a time</option>"
+
+    if(date.value === today){
+        const times = [
+            ["08:00:00", "8:00 AM"],
+            ["10:00:00", "10:00 AM"],
+            ["12:00:00", "12:00 PM"],
+            ["14:00:00", "2:00 PM"],
+            ["16:00:00", "4:00 PM"]
+        ]
+        for(let t of times){
+            const opt = document.createElement("option")
+            opt.value = t[0]
+            console.log(t)
+            opt.textContent = t[1]
+            // For knowing if time past by
+            
+            const current = new Date()
+            const timer = new Date(`${today} ${t[0]}`)
+            if(current.getTime() <= timer.getTime()){
+                time.appendChild(opt)
+            }
+        }
+    }else{
+        const times = [
+            ["08:00:00", "8:00 AM"],
+            ["10:00:00", "10:00 AM"],
+            ["12:00:00", "12:00 PM"],
+            ["14:00:00", "2:00 PM"],
+            ["16:00:00", "4:00 PM"]
+        ]
+        for(let t of times){
+            const opt = document.createElement("option")
+            opt.value = t[0]
+            opt.textContent = t[1]
+            time.appendChild(opt)
+        }
+
+    }
+}
 </script>   
 
 

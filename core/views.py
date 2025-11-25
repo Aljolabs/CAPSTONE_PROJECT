@@ -86,6 +86,7 @@ def booking(request):
                 {'id': 2, 'name': 'Deep Cleaning', 'price': 200.00},
                 {'id': 3, 'name': 'Office Cleaning', 'price': 180.00}
             ]
+            
             return render(request, 'booking.html', {'services': mock_services, 'db_ready': True})
         except Exception:
             # If even that fails, show the page without services
@@ -134,26 +135,31 @@ def booking_submit(request):
         downpayment_amount = service.price * Decimal('0.4')  # Calculate 40% downpayment using Decimal
         
         # Create or update customer
-        customer, created = Customer.objects.get_or_create(
-            email=email,
-            defaults={
-                'name': name,
-                'phone': phone,
-                'address': address,
-                'user': request.user if request.user.is_authenticated else None
-            }
-        )
-        
-        if not created:
-            customer.name = name
-            customer.phone = phone
-            customer.address = address
-            customer.save()
+        customers = Customer.objects.get(user__exact=request.user if request.user.is_authenticated else None)
+        print(customers)
+        if customers == None:
+            customer, created = Customer.objects.get_or_create(
+                email=email,
+                defaults={
+                    'name': name,
+                    'phone': phone,
+                    'address': address,
+                    'user': request.user if request.user.is_authenticated else None
+                }
+            )
+            
+            if not created:
+                customer.name = name
+                customer.phone = phone
+                customer.address = address
+                customer.save()
+                customers = customer
             
         # Create the booking with user note and payment information
         booking = Booking.objects.create(
-            customer=customer,
+            customer=customers,
             service=service,
+            destination=address,
             date=date,
             time=time,
             user_note=user_note,  # Save user note

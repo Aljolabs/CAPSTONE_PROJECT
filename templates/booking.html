@@ -421,12 +421,7 @@
                     <div class="mb-3">
                         <label for="time" class="form-label">Time</label>
                         <select class="form-select" id="time" name="time" required>
-                            <option value="">Select a time</option>
-                            <option value="08:00:00">8:00 AM</option>
-                            <option value="10:00:00">10:00 AM</option>
-                            <option value="12:00:00">12:00 PM</option>
-                            <option value="14:00:00">2:00 PM</option>
-                            <option value="16:00:00">4:00 PM</option>
+                            <option value="" selected disabled>Select a time</option>
                         </select>
                     </div>
                     
@@ -462,7 +457,7 @@
                         <div class="modal-body">
 
                             <!-- Province -->
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="modalProvince" class="form-label">Province</label>
                                 <select id="modalProvince" class="form-select">
                                     <option value="">Select Province</option>
@@ -472,10 +467,10 @@
                                     <option value="Quezon">Quezon</option>
                                     <option value="Rizal">Rizal</option>
                                 </select>
-                            </div>
+                            </div> -->
 
                             <!-- City -->
-                            <div class="mb-3 d-none" id="modalCityGroup">
+                            <div class="mb-3" id="modalCityGroup">
                                 <label for="modalCity" class="form-label">City/Municipality</label>
                                 <select id="modalCity" class="form-select"></select>
                             </div>
@@ -624,7 +619,6 @@ const barangayData = {
     "Lucena City": ["Marketview", "Ibabang Iyam", "Gulang-gulang"]
 };
 
-const modalProvince = document.getElementById('modalProvince');
 const modalCity = document.getElementById('modalCity');
 const modalBarangay = document.getElementById('modalBarangay');
 const modalStreet = document.getElementById('modalStreet');
@@ -635,7 +629,7 @@ const modalStreetGroup = document.getElementById('modalStreetGroup');
 const saveAddressBtn = document.getElementById('saveAddressBtn');
 const addressField = document.getElementById('address');
 
-modalProvince.addEventListener('change', () => {
+// modalProvince.addEventListener('change', () => {
     modalCity.innerHTML = '<option value="">Select City/Municipality</option>';
     modalBarangay.innerHTML = '<option value="">Select Barangay</option>';
     modalCityGroup.classList.add('d-none');
@@ -643,14 +637,14 @@ modalProvince.addEventListener('change', () => {
     modalStreetGroup.classList.add('d-none');
     saveAddressBtn.classList.add('d-none');
 
-    const selectedProvince = modalProvince.value;
+    const selectedProvince = "Quezon";
     if (cityData[selectedProvince]) {
         cityData[selectedProvince].forEach(city => {
             modalCity.innerHTML += `<option value="${city}">${city}</option>`;
         });
         modalCityGroup.classList.remove('d-none');
     }
-});
+// });
 
 modalCity.addEventListener('change', () => {
     modalBarangay.innerHTML = '<option value="">Select Barangay</option>';
@@ -690,7 +684,7 @@ saveAddressBtn.addEventListener('click', () => {
         modalStreet.value.trim(),
         modalBarangay.value,
         modalCity.value,
-        modalProvince.value
+        "Quezon Province"
     ].filter(Boolean).join(', ');
     addressField.value = fullAddress;
 });
@@ -706,6 +700,52 @@ document.addEventListener('show.bs.modal', function (e) {
         }
     }, 0);
 });
+
+const date = document.getElementById("date")
+const today = new Date().toISOString().split('T')[0]
+date.setAttribute("min", today)
+date.onchange = () => {
+    const time = document.getElementById("time")
+    time.innerHTML = "<option value='' selected disabled>Select a time</option>"
+
+    if(date.value === today){
+        const times = [
+            ["08:00:00", "8:00 AM"],
+            ["10:00:00", "10:00 AM"],
+            ["12:00:00", "12:00 PM"],
+            ["14:00:00", "2:00 PM"],
+            ["16:00:00", "4:00 PM"]
+        ]
+        for(let t of times){
+            const opt = document.createElement("option")
+            opt.value = t[0]
+            console.log(t)
+            opt.textContent = t[1]
+            // For knowing if time past by
+            
+            const current = new Date()
+            const timer = new Date(`${today} ${t[0]}`)
+            if(current.getTime() <= timer.getTime()){
+                time.appendChild(opt)
+            }
+        }
+    }else{
+        const times = [
+            ["08:00:00", "8:00 AM"],
+            ["10:00:00", "10:00 AM"],
+            ["12:00:00", "12:00 PM"],
+            ["14:00:00", "2:00 PM"],
+            ["16:00:00", "4:00 PM"]
+        ]
+        for(let t of times){
+            const opt = document.createElement("option")
+            opt.value = t[0]
+            opt.textContent = t[1]
+            time.appendChild(opt)
+        }
+
+    }
+}
 
 </script>
 
