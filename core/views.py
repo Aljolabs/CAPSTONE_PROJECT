@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.db.utils import OperationalError, ProgrammingError, IntegrityError
 from django.db import connection  # Add this import for database connection
-from django.db.models import Count, Sum, Q, Avg, F  # Add analytics imports and F
+from django.db.models import Count, Sum, Q, Avg, F, When, Case, Value, IntegerField  # Add analytics imports and F
 from .models import Service, Customer, Booking, UserProfile, Notification
 from .forms import RegistrationForm, LoginForm
 from django.contrib.auth.models import User  # Add this import at the top with other imports
@@ -558,8 +558,17 @@ def user_dashboard(request):
     if booking_table_exists:
         try:
             # Get bookings ordered by date and time
-            bookings = Booking.objects.filter(customer__user=request.user).order_by('-date', '-time')
-            print(bookings)
+            # Priority of Pending
+            status_order = Case(
+                When(status='pending', then=Value(1)),
+                When(status='confirmed', then=Value(2)),
+                When(status='completed', then=Value(3)),
+                When(status='cancelled', then=Value(4)),
+                default=Value(5),
+                output_field=IntegerField(),
+            )
+            bookings = Booking.objects.filter(customer__user=request.user).order_by(status_order,'-date', '-time')
+
             # Get notifications with more reliable approach
             try:
                 with connection.cursor() as cursor:
