@@ -758,10 +758,19 @@ def admin_dashboard(request):
             monthly_revenue = 0
         
         # Get recent bookings for display
+        status_order = Case(
+            When(status='pending', then=Value(1)),
+            When(status='confirmed', then=Value(2)),
+            When(status='completed', then=Value(3)),
+            When(status='cancelled', then=Value(4)),
+            default=Value(5),
+            output_field=IntegerField(),
+        )
+        
         if created_at_exists:
-            bookings = Booking.objects.order_by('-created_at')
+            bookings = Booking.objects.order_by(status_order, '-created_at')
         else:
-            bookings = Booking.objects.order_by('-date', '-time')
+            bookings = Booking.objects.order_by(status_order, '-date', '-time')
 
         if request.GET.get("type"):
             filter = request.GET.get("type")
