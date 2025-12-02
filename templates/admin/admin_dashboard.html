@@ -645,7 +645,7 @@
                                                 <tbody>
                                                     {% for location in location_bookings|slice:":5" %}
                                                     <tr>
-                                                        <td>{{ location.city++|truncatechars:25|default:"" }} {{ location.barangay|truncatechars:25|default:"Unknown" }}</td>
+                                                        <td>{{ location.city|truncatechars:25|default:"" }} {{ location.barangay|truncatechars:25|default:"Unknown" }}</td>
                                                         <td><span class="badge bg-success">{{ location.total }}</span></td>
                                                     </tr>
                                                     {% empty %}
@@ -699,11 +699,11 @@
                     <h5 class="mb-0">Recent Bookings</h5>
                     <div>
                         <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary active booking-filter" data-filter="all">All</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="pending">Pending</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="confirmed">Confirmed</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="completed">Completed</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="cancelled">Cancelled</button>
+                            <button type="button" onclick="filterTo('all')" class="btn btn-sm btn-outline-secondary active booking-filter" data-filter="all">All</button>
+                            <button type="button" onclick="filterTo('pending')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="pending">Pending</button>
+                            <button type="button" onclick="filterTo('confirmed')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="confirmed">Confirmed</button>
+                            <button type="button" onclick="filterTo('completed')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="completed">Completed</button>
+                            <button type="button" onclick="filterTo('cancelled')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="cancelled">Cancelled</button>
                         </div>
                         <a href="{% url 'admin_bookings' %}" class="btn btn-sm btn-outline-secondary">View All</a>
                     </div>
@@ -862,6 +862,12 @@
     //     "colors": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
     // })
 
+</script>
+
+<script>
+    function filterTo(category){
+        location.href = `?type=${category}`
+    }
 </script>
 
 <!-- optional na modal kasi hindi nagana logout -->

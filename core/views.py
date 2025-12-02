@@ -750,19 +750,36 @@ def admin_dashboard(request):
         
         # Get recent bookings for display
         if created_at_exists:
-            bookings = Booking.objects.filter(status='pending').order_by('-created_at')
+            bookings = Booking.objects.order_by('-created_at')
         else:
-            bookings = Booking.objects.filter(status='pending').order_by('-date', '-time')
-        
+            bookings = Booking.objects.order_by('-date', '-time')
+
+        if request.GET.get("type"):
+            filter = request.GET.get("type")
+            if not filter == "all":
+                if created_at_exists:
+                    bookings = Booking.objects.filter(status=filter).order_by('-created_at')
+                else:
+                    bookings = Booking.objects.filter(status=filter).order_by('-date', '-time')
+
+            
         # Pagination for recent bookings
         paginator = Paginator(bookings, 10)  # Show 10 bookings per page
         page_number = request.GET.get('page')
-        recent_bookings = paginator.get_page(page_number)
-            
+        try:
+            recent_bookings = paginator.get_page(page_number)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver the first page.
+            recent_bookings = paginator.get_page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            recent_bookings = paginator.get_page(paginator.num_pages)
+        # recent_bookings = paginator.get_page(page_number)
+        
         customers = Customer.objects.all()
         services = list(Service.objects.values_list('name', flat=True))
         location_bookings = Booking.objects.values("city", "barangay").annotate(total=Count("id")).order_by("-total")
-        print(location_bookings)
+        # print(recent_bookings.paginator)
 
         return render(request, 'admin/admin_dashboard.html', {
             'recent_bookings': recent_bookings,
