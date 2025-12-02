@@ -51,6 +51,9 @@ class Booking(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
+    city = models.CharField(max_length=50)
+    barangay = models.CharField(max_length=250)
+    street = models.CharField(max_length=100)
     decline_reason = models.TextField(blank=True, null=True)
     assigned_staff = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='assigned_bookings')
     status_choices = [

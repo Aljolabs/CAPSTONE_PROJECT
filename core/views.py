@@ -115,6 +115,11 @@ def booking_submit(request):
     phone = request.POST.get('phone')
     address = request.POST.get('address')
     user_note = request.POST.get('user_note', '')  # Get user note (optional)
+
+    chopped_data = address.split(", ")
+    street = chopped_data[0]
+    brgy = chopped_data[1]
+    city = chopped_data[2]
     
     # Get payment fields
     payment_method = request.POST.get('payment_method')
@@ -137,30 +142,33 @@ def booking_submit(request):
         # Create or update customer
         if not request.user.is_authenticated:
             raise Exception("User is not logged in")
-        # customers = Customer.objects.get(user__exact=request.user)
+        customers = Customer.objects.get(user__exact=request.user)
         # print(customers)
-        # if customers == None:
-        customer, created = Customer.objects.get_or_create(
-            email=email,
-            defaults={
-                'name': name,
-                'phone': phone,
-                'address': address,
-                'user': request.user
-            }
-        )
-        
-        if not created:
-            customer.name = name
-            customer.phone = phone
-            customer.address = address
-            customer.save()
-            # customers = customer
+        if customers == None:
+            customer, created = Customer.objects.create(
+                email=email,
+                defaults={
+                    'name': name,
+                    'phone': phone,
+                    'address': address,
+                    'user': request.user
+                }
+            )
+            
+            if not created:
+                customer.name = name
+                customer.phone = phone
+                customer.address = address
+                customer.save()
+                customers = customer
             
         # Create the booking with user note and payment information
         booking = Booking.objects.create(
-            customer=customer,
+            customer=customers,
             service=service,
+            barangay=brgy,
+            city=city,
+            street=street,
             destination=address,
             date=date,
             time=time,
@@ -550,8 +558,8 @@ def user_dashboard(request):
     if booking_table_exists:
         try:
             # Get bookings ordered by date and time
-            bookings = Booking.objects.filter(customer__email=request.user.email).order_by('-date', '-time')
-            
+            bookings = Booking.objects.filter(customer__user=request.user).order_by('-date', '-time')
+            print(bookings)
             # Get notifications with more reliable approach
             try:
                 with connection.cursor() as cursor:
@@ -753,6 +761,8 @@ def admin_dashboard(request):
             
         customers = Customer.objects.all()
         services = list(Service.objects.values_list('name', flat=True))
+        location_bookings = Booking.objects.values("city", "barangay").annotate(total=Count("id")).order_by("-total")
+        print(location_bookings)
 
         return render(request, 'admin/admin_dashboard.html', {
             'recent_bookings': recent_bookings,

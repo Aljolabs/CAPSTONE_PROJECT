@@ -645,8 +645,8 @@
                                                 <tbody>
                                                     {% for location in location_bookings|slice:":5" %}
                                                     <tr>
-                                                        <td>{{ location.customer__address|truncatechars:25|default:"Unknown" }}</td>
-                                                        <td><span class="badge bg-success">{{ location.booking_count }}</span></td>
+                                                        <td>{{ location.city++|truncatechars:25|default:"" }} {{ location.barangay|truncatechars:25|default:"Unknown" }}</td>
+                                                        <td><span class="badge bg-success">{{ location.total }}</span></td>
                                                     </tr>
                                                     {% empty %}
                                                     <tr>
