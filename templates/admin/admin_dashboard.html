@@ -699,11 +699,30 @@
                     <h5 class="mb-0">Recent Bookings</h5>
                     <div>
                         <div class="btn-group me-2">
-                            <button type="button" onclick="filterTo('all')" class="btn btn-sm btn-outline-secondary active booking-filter" data-filter="all">All</button>
-                            <button type="button" onclick="filterTo('pending')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="pending">Pending</button>
-                            <button type="button" onclick="filterTo('confirmed')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="confirmed">Confirmed</button>
-                            <button type="button" onclick="filterTo('completed')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="completed">Completed</button>
-                            <button type="button" onclick="filterTo('cancelled')" class="btn btn-sm btn-outline-secondary booking-filter" data-filter="cancelled">Cancelled</button>
+                            <button type="button" onclick="filterTo('all')"
+                                    class="btn btn-sm btn-outline-secondary booking-filter {% if request.GET.type == 'all' or not request.GET.type %}active{% endif %}">
+                                All
+                            </button>
+
+                            <button type="button" onclick="filterTo('pending')"
+                                    class="btn btn-sm btn-outline-secondary booking-filter {% if request.GET.type == 'pending' %}active{% endif %}">
+                                Pending
+                            </button>
+
+                            <button type="button" onclick="filterTo('confirmed')"
+                                    class="btn btn-sm btn-outline-secondary booking-filter {% if request.GET.type == 'confirmed' %}active{% endif %}">
+                                Confirmed
+                            </button>
+
+                            <button type="button" onclick="filterTo('completed')"
+                                    class="btn btn-sm btn-outline-secondary booking-filter {% if request.GET.type == 'completed' %}active{% endif %}">
+                                Completed
+                            </button>
+
+                            <button type="button" onclick="filterTo('cancelled')"
+                                    class="btn btn-sm btn-outline-secondary booking-filter {% if request.GET.type == 'cancelled' %}active{% endif %}">
+                                Cancelled
+                            </button>
                         </div>
                         <a href="{% url 'admin_bookings' %}" class="btn btn-sm btn-outline-secondary">View All</a>
                     </div>
