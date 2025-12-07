@@ -246,8 +246,8 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Current Assignments</h5>
                         <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-secondary active" id="filter-all">All</button>
-                            <button type="button" class="btn btn-outline-secondary" id="filter-primary">Primary Only</button>
+                            <button type="button" class="btn btn-outline-secondary {% if request.GET.primary != 'primary' %}active{% endif %}" onclick="location.href='?primary=all'" id="filter-all">All</button>
+                            <button type="button" class="btn btn-outline-secondary {% if request.GET.primary == 'primary' %}active{% endif %}" onclick="location.href='?primary=primary'" id="filter-primary">Primary Only</button>
                         </div>
                     </div>
                     <div class="card-body p-0">

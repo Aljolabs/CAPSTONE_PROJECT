@@ -24,7 +24,7 @@ from django.utils.html import strip_tags
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.models import User
-from .models import StaffService, Service
+from .models import StaffService, Service, InventoryItem
 from datetime import datetime, timedelta
 from django.db import transaction  # Add this import at the top
 
@@ -65,6 +65,7 @@ def services(request):
             "Database setup incomplete: Service table missing. Please run the following command: "
             "python fix_migrations.py"
         )
+
         # Return a simplified version of the services page without database queries
         return render(request, 'services.html', {'services': [], 'db_ready': False})
     
@@ -918,8 +919,15 @@ def admin_services(request):
     if not hasattr(request.user, 'profile') or not request.user.profile.is_admin:
         messages.error(request, "You don't have permission to access this page.")
         return redirect('home')
+    
+    materials = InventoryItem.objects.all()
     services = Service.objects.all()
-    return render(request, 'admin/services.html', {'services': services})
+
+    print("Materials")
+    print(materials)
+    print("Materials")
+
+    return render(request, 'admin/services.html', {'services': services, "materials": materials})
 
 @login_required
 def admin_customers(request):
@@ -996,9 +1004,11 @@ def admin_services(request):
     
     # Include archived services in the queryset
     services = Service.objects.all().order_by('-id')
-    
+    materials = InventoryItem.objects.all()
+
     context = {
         'services': services,
+        'materials': materials
     }
     return render(request, 'admin/services.html', context)
     
@@ -1629,6 +1639,11 @@ def admin_assign_service(request):
     staff_services = StaffService.objects.select_related('staff', 'service').all().order_by(
         'staff__first_name', 'staff__last_name', '-is_primary', 'service__name'
     )
+    if request.GET.get("primary"):
+        if request.GET.get("primary") == "primary":
+            staff_services = StaffService.objects.filter(is_primary__exact=True).select_related('staff', 'service').all().order_by(
+                'staff__first_name', 'staff__last_name', '-is_primary', 'service__name'
+            )
     
     # Handle form submission
     if request.method == 'POST':
