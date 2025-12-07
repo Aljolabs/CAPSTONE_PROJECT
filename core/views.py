@@ -14,6 +14,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from decimal import Decimal  # Add this import for decimal calculations
 import json
 import secrets
+import calendar
 # import datetime
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -646,8 +647,12 @@ def admin_dashboard(request):
             created_at_exists = cursor.fetchone()[0]
         
         # Get current date and time
-        now = timezone.now()
-        
+        month_now = 1
+        if request.GET.get("analytics_month"):
+            month_now = int(request.GET.get("analytics_month"))
+
+        now = timezone.now().replace(month=month_now, day=1)
+
         # Basic stats
         total_bookings = Booking.objects.all().count()
         pending_bookings = Booking.objects.filter(status='pending').count()
@@ -655,19 +660,25 @@ def admin_dashboard(request):
 
         # Time-based analytics
         # This Year
-        year_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        year_start = now.replace(month=month_now, day=1, hour=0, minute=0, second=0, microsecond=0)
         if created_at_exists:
             bookings_this_year = Booking.objects.filter(created_at__gte=year_start).count()
         else:
             bookings_this_year = Booking.objects.filter(date__gte=year_start.date()).count()
         
+
         # This Month
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(month=month_now, day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_day = calendar.monthrange(month_start.year, month_start.month)[1]
+        month_end = month_start.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+            
         if created_at_exists:
-            bookings_this_month = Booking.objects.filter(created_at__gte=month_start).count()
+            bookings_this_month = Booking.objects.filter(Q(created_at__gte=month_start) & Q(created_at__lte=month_end)).count()
         else:
             bookings_this_month = Booking.objects.filter(date__gte=month_start.date()).count()
         
+        bookings_this_month = bookings_this_month or 0
+
         # This Week
         week_start = now - timedelta(days=now.weekday())
         week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -723,6 +734,13 @@ def admin_dashboard(request):
         service_bookings = Booking.objects.values('service__name').annotate(
             booking_count=Count('id')
         ).order_by('-booking_count')
+
+        print(service_bookings)
+
+        result_book = {
+            "service": [item['service__name'] for item in service_bookings],
+            "total": [item['booking_count'] for item in service_bookings]
+        }
         
         # Location analytics - Using address field instead of city/barangay
         # Extract location data from address field
@@ -771,6 +789,8 @@ def admin_dashboard(request):
             bookings = Booking.objects.order_by(status_order, '-created_at')
         else:
             bookings = Booking.objects.order_by(status_order, '-date', '-time')
+        
+        new_booking = bookings
 
         if request.GET.get("type"):
             filter = request.GET.get("type")
@@ -799,7 +819,20 @@ def admin_dashboard(request):
         location_bookings = Booking.objects.values("city", "barangay").annotate(total=Count("id")).order_by("-total")
         # print(recent_bookings.paginator)
 
+        months = [
+            "January", "February", "March", "April", "May", "June", 
+            "July", "August", "September", "October", "November", "December"
+        ]
+
+        current_month = months[month_start.month - 1]
+        if request.GET.get("analytics_month"):
+            current_month = months[int(request.GET.get("analytics_month")) - 1]
+
+        
+
+
         return render(request, 'admin/admin_dashboard.html', {
+            'current_month': current_month,
             'recent_bookings': recent_bookings,
             'customers': customers,
             'services': services,
@@ -814,6 +847,7 @@ def admin_dashboard(request):
             'monthly_bookings': monthly_bookings,
             'quarterly_bookings': quarterly_bookings,
             'service_bookings': service_bookings,
+            'result_bookings': result_book,
             'location_bookings': location_bookings,
             'customer_bookings': customer_bookings,
             'staff_bookings': staff_bookings,

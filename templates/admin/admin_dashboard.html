@@ -532,6 +532,28 @@
                         </div>
                         <div class="card-body">
                             <!-- Time-based Analytics -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    Month: {{ current_month }}
+                                </button>
+
+                                <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+                                    <li><a class="dropdown-item" href="?analytics_month=1">January</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=2">February</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=3">March</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=4">April</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=5">May</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=6">June</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=7">July</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=8">August</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=9">September</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=10">October</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=11">November</a></li>
+                                    <li><a class="dropdown-item" href="?analytics_month=12">December</a></li>
+                                </ul>
+                            </div>
+
                             <div class="row mb-4">
                                 <div class="col-md-3">
                                     <div class="analytics-card bg-primary text-white">
@@ -551,7 +573,9 @@
                                         </div>
                                         <div class="analytics-content">
                                             <h3>{{ bookings_this_month }}</h3>
-                                            <p class="mb-0">This Month</p>
+                                            <p class="mb-0">
+                                            {{ current_month }}
+                                        </p>
                                         </div>
                                     </div>
                                 </div>
@@ -855,26 +879,31 @@
 </script>
 
 {{ services|json_script:"services-data" }}
+{{ result_bookings|json_script:"result_bookings" }}
+{{ monthly_bookings|json_script:"monthly_bookings" }}
 
 <!-- ChartJs configurations -->
 <!-- Search "Graph for analytics" for faster navigation -->
 
 <script>
     const services = JSON.parse(document.getElementById("services-data").textContent);
+    const service_bookings = JSON.parse(document.getElementById("result_bookings").textContent);
+    const monthly_bookings = JSON.parse(document.getElementById("monthly_bookings").textContent);
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ]
-    console.log(services)
+
     generateGraph("bar", "bar", {
         "label": services,
-        "value": [12, 19, 3, 5, 2, 3],
-    }, "Monthly distribution of activity")
+        "value": service_bookings.total,
+    }, "Boookings for month of {{ current_month }}")
 
     generateGraph("line", "line", {
         "label": months,
-        "value": [12, 19, 3, 5, 2, 3]
-    })
+        "value": monthly_bookings
+    }, "Monthly Bookings")
+
     // generateGraph("pie", "pie", {
     //     "label": ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
     //     "value": [12, 19, 3, 5, 2, 3],
