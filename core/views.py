@@ -24,6 +24,7 @@ from django.utils.html import strip_tags
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.db.models import Prefetch
 from .models import StaffService, Service, InventoryItem
 from datetime import datetime, timedelta
 from django.db import transaction  # Add this import at the top
@@ -1004,7 +1005,7 @@ def admin_services(request):
     
     # Include archived services in the queryset
     services = Service.objects.all().order_by('-id')
-    materials = InventoryItem.objects.all()
+    materials = InventoryItem.objects.all().order_by('category__name')
 
     context = {
         'services': services,
@@ -1919,7 +1920,7 @@ def admin_staff(request):
         return redirect('home')
     
     # Get all staff users (users with is_staff=True)
-    staff_list = User.objects.filter(is_staff=True).order_by('-date_joined')
+    staff_list = StaffService.objects.all() # .order_by('staff.date_joined')
     
     return render(request, 'admin/staff_management.html', {
         'staff_list': staff_list

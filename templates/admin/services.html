@@ -192,11 +192,12 @@
                 <label class="form-label">Materials & Equipment</label>
                 {% for material in materials %}
                 <div>
-                    <input type="checkbox" name="materials" id="{{ material.name }}">
-                    <label for="{{ material.name }}">{{ material.name}}</label>
+                    <label for="{{ material.name }}">
+                        <input type="checkbox" name="materials" id="{{ material.name }}">
+                        {{ material.name}} [{{ material.category.name }}]
+                    </label>
                 </div>
                 {% endfor %}
-                <!-- <textarea class="form-control" id="service-materials" name="materials" rows="3" placeholder="List of materials and equipment"></textarea> -->
             </div>
             
             <div class="mb-3">

@@ -113,34 +113,28 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="staff-avatar me-3">
-                                            {{ staff.first_name|first|default:staff.username|first|upper }}{{ staff.last_name|first|upper }}
+                                            {{ staff.staff.first_name|first|default:staff.staff.username|first|upper }}{{ staff.staff.last_name|first|upper }}
                                         </div>
                                         <div>
-                                            <div class="fw-bold">{{ staff.get_full_name|default:staff.username }}</div>
-                                            {% if staff.profile.phone %}
-                                                <small class="text-muted">{{ staff.profile.phone }}</small>
+                                            <div class="fw-bold">{{ staff.staff.get_full_name|default:staff.staff.username }}</div>
+                                            {% if staff.staff.profile.phone %}
+                                                <small class="text-muted">{{ staff.staff.profile.phone }}</small>
                                             {% endif %}
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{ staff.username }}</td>
-                                <td>{{ staff.email|default:"-" }}</td>
-                                <td>{{ staff.date_joined|date:"M d, Y" }}</td>
+                                <td>{{ staff.staff.username }}</td>
+                                <td>{{ staff.staff.email|default:"-" }}</td>
+                                <td>{{ staff.staff.date_joined|date:"M d, Y" }}</td>
                                 <td>
-                                    {% if staff.is_active %}
+                                    {% if staff.staff.is_active %}
                                         <span class="staff-status status-active">Active</span>
                                     {% else %}
                                         <span class="staff-status status-inactive">Inactive</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% with staff.staffservice_set.count as service_count %}
-                                        {% if service_count > 0 %}
-                                            <span class="badge bg-info">{{ service_count }} Service{{ service_count|pluralize }}</span>
-                                        {% else %}
-                                            <span class="text-muted">No services assigned</span>
-                                        {% endif %}
-                                    {% endwith %}
+                                    {{ staff.service }}
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
@@ -161,7 +155,7 @@
                                             </button>
                                         {% else %}
                                             <button type="button" class="btn btn-sm btn-outline-success activate-staff-btn" 
-                                                    data-staff-id="{{ staff.id }}" data-staff-name="{{ staff.get_full_name|default:staff.username }}">
+                                                    data-staff-id="{{ staff.id }}" data-staff-name="{{ staff.staff.get_full_name|default:staff.staff.username }}">
                                                 <i class="bi bi-play-circle"></i>
                                             </button>
                                         {% endif %}
