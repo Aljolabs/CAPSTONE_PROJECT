@@ -36,7 +36,7 @@ def staff_computation(data, task_name, top=5):
     # Sort by rating (descending)
     subset = subset.sort_values('avg_rating', ascending=False)
 
-    print(subset.head(top).to_json(orient="records"))
+    # print(subset.head(top).to_json(orient="records"))
 
     # Return top results as JSON
     return subset.head(top).to_json(orient="records")

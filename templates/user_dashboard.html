@@ -290,7 +290,7 @@
     
     .notification-message {
         max-height: 100px;
-        overflow-y: auto;
+        overflow-x: hidden;
         text-overflow: ellipsis;
     }
     
@@ -703,7 +703,7 @@
                         <div class="notification-dropdown">
                             {% if notifications %}
                                 {% for notification in notifications %}
-                                <div class="dropdown-item border-bottom p-3 notification-item {% if notification.is_read %}read{% endif %}" data-notification-id="{{ notification.id }}">
+                                <div onclick="location.href='../feedback/{{notification.booking_id}}'" class="dropdown-item border-bottom p-3 notification-item {% if notification.is_read %}read{% endif %}" data-notification-id="{{ notification.id }}">
                                     <div class="d-flex align-items-center mb-2">
                                         <div class="me-2">
                                             <small class="text-muted">{{ notification.created_at|date:"M d, Y" }}</small>
@@ -1521,6 +1521,7 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="modal-feedback-btn">Feedback</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -2186,7 +2187,10 @@
                     afterPhotoElement.style.display = 'none';
                     noAfterPhotoElement.style.display = 'block';
                 }
-                
+
+                document.getElementById("modal-feedback-btn").onclick = () => {
+                    location.href = `../feedback/${bookingId}/`
+                }
                 // Show the modal
                 const detailsModal = new bootstrap.Modal(document.getElementById('userBookingDetailsModal'));
                 detailsModal.show();

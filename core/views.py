@@ -591,7 +591,7 @@ def user_dashboard(request):
                         # Get all notifications
                         cursor.execute("""
                             SELECT n.id, n.message, n.created_at, n.is_read, n.booking_id, 
-                                   COALESCE(s.name, 'Service') as service_name
+                                   COALESCE(s.name, 'Service') as service_name, n.booking_id
                             FROM core_notification n
                             LEFT JOIN core_booking b ON n.booking_id = b.id
                             LEFT JOIN core_service s ON b.service_id = s.id
@@ -606,7 +606,8 @@ def user_dashboard(request):
                                 'message': row[1],
                                 'created_at': row[2],
                                 'is_read': row[3],
-                                'service_name': row[5]
+                                'service_name': row[5],
+                                'booking_id': row[6]
                             })
                 
                 # Log debug info
@@ -894,13 +895,31 @@ def admin_bookings(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name='core_booking' AND column_name='created_at')")
             created_at_exists = cursor.fetchone()[0]
-            
+        
+        status_order = Case(
+            When(status='pending', then=Value(1)),
+            When(status='confirmed', then=Value(2)),
+            When(status='completed', then=Value(3)),
+            When(status='cancelled', then=Value(4)),
+            default=Value(5),
+            output_field=IntegerField(),
+        )
+        
         # Get bookings with appropriate ordering
         if created_at_exists:
-            bookings = Booking.objects.all().order_by('-created_at')
+            bookings = Booking.objects.all().order_by(status_order, '-created_at')
         else:
-            bookings = Booking.objects.all().order_by('-date', '-time')
-            
+            bookings = Booking.objects.all().order_by(status_order, '-date', '-time')
+
+        
+        if request.GET.get("type"):
+            filter = request.GET.get("type")
+            if not filter == "all":
+                if created_at_exists:
+                    bookings = Booking.objects.filter(status=filter).order_by('-created_at')
+                else:
+                    bookings = Booking.objects.filter(status=filter).order_by('-date', '-time')
+   
         # Pagination
         paginator = Paginator(bookings, 10)  # Show 10 bookings per page
         page_number = request.GET.get('page')
@@ -1079,7 +1098,25 @@ def bookings_page(request):
     """View for managing bookings."""
     try:
         # Change order to not use created_at
-        bookings = Booking.objects.all().order_by('-date', '-time')
+        
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name='core_booking' AND column_name='created_at')")
+            created_at_exists = cursor.fetchone()[0]
+
+        status_order = Case(
+            When(status='pending', then=Value(1)),
+            When(status='confirmed', then=Value(2)),
+            When(status='completed', then=Value(3)),
+            When(status='cancelled', then=Value(4)),
+            default=Value(5),
+            output_field=IntegerField(),
+        )
+        
+        if created_at_exists:
+            bookings = Booking.objects.order_by(status_order, '-created_at')
+        else:
+            bookings = Booking.objects.order_by(status_order, '-date', '-time')
+        
         return render(request, 'admin/bookings.html', {'bookings': bookings})
     except Exception as e:
         messages.error(request, f"Database error: {str(e)}")
@@ -1314,6 +1351,7 @@ def check_notifications(request):
                 
                 notification_list.append({
                     'id': notification_id,
+                    'booking_id': booking_id,
                     'message': message,
                     'created_at': created_at.isoformat() if created_at else None,
                     'service_name': service_name
@@ -3134,29 +3172,38 @@ def staff_suggestion_view(request):
     from .predictions import staff_computation
     from django.core import serializers
     import json
+    from django.http import HttpResponse
 
-    service = Service.objects.get(name__iexact="Disinfection ")
+    service = request.GET.get("service")
+    if not service:
+        return HttpResponse("Service is required")
+
+    service = Service.objects.get(name__iexact=service)
     ratings = Feedback.objects.filter(service=service.id)
 
-    # Queryset to json
-    json_data = json.loads(serializers.serialize('json', ratings))
-    result = []
-    for i in json_data:
-        result.append(i['fields'])
-    
-    suggested_data = staff_computation(result, service.id)
+    if ratings.count() > 0:
 
-    new_data = json.loads(suggested_data)
-    list_of_staffs = []
-    for i in new_data:
-        staff = UserProfile.objects.get(id__exact=i.get("assigned_staff"))
-        info = User.objects.get(username__exact=staff.user)
-        list_of_staffs.append({
-            "username": staff.user,
-            "first_name": info.first_name,
-            "last_name": info.last_name,
-            "count": i.get("avg_rating")
-        })
+    # Queryset to json
+        json_data = json.loads(serializers.serialize('json', ratings))
+        result = []
+        for i in json_data:
+            result.append(i['fields'])
+        
+        suggested_data = staff_computation(result, service.id)
+
+        new_data = json.loads(suggested_data)
+        list_of_staffs = []
+        for i in new_data:
+            staff = UserProfile.objects.get(id__exact=i.get("assigned_staff"))
+            info = User.objects.get(username__exact=staff.user)
+            list_of_staffs.append({
+                "username": staff.user,
+                "first_name": info.first_name,
+                "last_name": info.last_name,
+                "count": i.get("avg_rating")
+            })
+    else:
+        list_of_staffs = ['No suggested staff']
     
     return render(request, "suggestion.html", {"lists": list_of_staffs})
 
