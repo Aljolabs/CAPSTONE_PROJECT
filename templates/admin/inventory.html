@@ -339,7 +339,7 @@
                                 <select class="form-select" id="editItemCategory" name="category" required>
                                     <option value="">Select Category</option>
                                     {% for category in categories %}
-                                    <option value="{{ category.id }}">{{ category.get_name_display }}</option>
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

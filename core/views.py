@@ -904,7 +904,8 @@ def admin_bookings(request):
             default=Value(5),
             output_field=IntegerField(),
         )
-        
+        inventory = InventoryItem.objects.all().order_by(Case(When(category__name__exact='Chemical', then=Value(0)), default=Value(1)))
+
         # Get bookings with appropriate ordering
         if created_at_exists:
             bookings = Booking.objects.all().order_by(status_order, '-created_at')
@@ -924,8 +925,11 @@ def admin_bookings(request):
         paginator = Paginator(bookings, 10)  # Show 10 bookings per page
         page_number = request.GET.get('page')
         paginated_bookings = paginator.get_page(page_number)
+
+        print(inventory)
         
         return render(request, 'admin/bookings.html', {
+            'items': inventory,
             'bookings': paginated_bookings,
             'created_at_exists': created_at_exists
         })
@@ -1166,6 +1170,7 @@ def update_booking_status(request):
     
     booking_id = request.POST.get('booking_id')
     new_status = request.POST.get('status')
+    items = request.POST.getlist('items')
     admin_note = request.POST.get('admin_note', '')  # Get admin note if provided
     decline_reason = request.POST.get('decline_reason', '')  # Get decline reason if provided
     
@@ -1183,6 +1188,15 @@ def update_booking_status(request):
             booking.decline_reason = decline_reason.strip()
         
         # If status is being changed to confirmed and no staff is assigned yet, auto-assign staff
+        print(new_status)
+        if new_status == 'confirmed':
+            print("items", items)
+            for item in items:
+                print("Item")
+                inventory = InventoryItem.objects.get(id__exact=item)
+                inventory.current_stock -= 1
+                inventory.save()
+
         if new_status == 'confirmed' and not booking.assigned_staff:
             # Try to find staff with this as primary service
             primary_staff_service = StaffService.objects.filter(
@@ -1879,7 +1893,7 @@ def booking_detail(request, booking_id):
         # Get qualified staff for this service
         qualified_staff = StaffService.objects.filter(service=booking.service).select_related('staff')
         qualified_staff_names = [staff.staff.get_full_name() for staff in qualified_staff]
-        
+
         response = {
             'id': booking.id,
             'customer_name': booking.customer.name,

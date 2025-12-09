@@ -443,6 +443,15 @@
                     <input type="hidden" id="accept-booking-id" name="booking_id">
                     <input type="hidden" name="status" value="confirmed">
                     
+                    <div class="d-flex flex-column mb-3">
+                        <label for="accept-admin-note" class="form-label">
+                            <i class="bi bi-info-circle text-warning me-2"></i>Select Items
+                        </label>
+                        {% for inventory in items %}
+                            <label><input type="checkbox" name="items" value="{{ inventory.id }}"> {{ inventory.name }} [Current Stock: {{ inventory.current_stock }}]</label>
+                        {% endfor %}
+                    </div>
+
                     <div class="mb-3">
                         <label for="accept-admin-note" class="form-label">
                             <i class="bi bi-info-circle text-warning me-2"></i>Service Requirements Note (Optional)
