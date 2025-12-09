@@ -650,9 +650,9 @@ def admin_dashboard(request):
             created_at_exists = cursor.fetchone()[0]
         
         # Get current date and time
-        month_now = 1
-        if request.GET.get("analytics_month"):
-            month_now = int(request.GET.get("analytics_month"))
+        # month_now = 1
+        # if request.GET.get("analytics_month"):
+        month_now = int(request.GET.get("analytics_month", datetime.now().month))
 
         now = timezone.now().replace(month=month_now, day=1)
 
@@ -1434,25 +1434,34 @@ def staff_dashboard(request):
     
     # Get today's date
     today = timezone.now().date()
+
+    status_order = Case(
+        When(status='pending', then=Value(1)),
+        When(status='confirmed', then=Value(2)),
+        When(status='completed', then=Value(3)),
+        When(status='cancelled', then=Value(4)),
+        default=Value(5),
+        output_field=IntegerField(),
+    )
     
     # Get today's bookings assigned to this staff
     todays_bookings = Booking.objects.filter(
         date=today,
         assigned_staff=request.user,  # Filter by the logged-in staff member
         status__in=['confirmed', 'pending']
-    ).order_by('time')
+    ).order_by(status_order, 'time')
     
     # Get upcoming bookings
     upcoming_bookings = Booking.objects.filter(
         date__gt=today,
         assigned_staff=request.user,  # Filter by the logged-in staff member
         status__in=['confirmed', 'pending']
-    ).order_by('date', 'time')[:10]
+    ).order_by(status_order, 'date', 'time')[:10]
     
     # Get all assignments for this staff
     all_assignments = Booking.objects.filter(
         assigned_staff=request.user  # Filter by the logged-in staff member
-    ).order_by('-date', '-time')[:20]
+    ).order_by(status_order, '-date', '-time')[:20]
     
     # Get services assigned to this staff member
     assigned_services = StaffService.objects.filter(
@@ -1465,6 +1474,7 @@ def staff_dashboard(request):
         assigned_staff=request.user,
         status__in=['confirmed', 'pending']
     ).count()
+
     completed_bookings = Booking.objects.filter(
         assigned_staff=request.user,
         status='completed'
@@ -1488,9 +1498,17 @@ def staff_bookings(request):
     search = request.GET.get('search', '')
     page = request.GET.get('page', 1)
     my_services_only = request.GET.get('my_services_only', 'false').lower() == 'true'
-    
+    status_order = Case(
+        When(status='pending', then=Value(1)),
+        When(status='confirmed', then=Value(2)),
+        When(status='completed', then=Value(3)),
+        When(status='cancelled', then=Value(4)),
+        default=Value(5),
+        output_field=IntegerField(),
+    )
+
     # Get all bookings
-    bookings = Booking.objects.all().order_by('-date', '-time')
+    bookings = Booking.objects.all().order_by(status_order, '-date', '-time')
     
     # Filter by my services if requested
     if my_services_only:
@@ -2922,6 +2940,7 @@ def admin_inventory(request):
     
     from .models import InventoryItem, InventoryCategory, InventoryTransaction
     from django.http import JsonResponse
+    from django.db.models import ExpressionWrapper, BooleanField, F    
     import uuid
     
     if request.method == 'POST':
@@ -3036,7 +3055,11 @@ def admin_inventory(request):
     
     # GET request - display inventory
     # Get all inventory items with their categories
-    inventory_items = InventoryItem.objects.select_related('category').order_by('category__name', 'name')
+    inventory_items = InventoryItem.objects.select_related('category').annotate(low_stock=Case(
+        When(current_stock__lte=F('minimum_stock'), then=Value(1)),
+        default=Value(0),
+        output_field=IntegerField()
+    )).order_by('-low_stock', 'category__name', 'name')
     categories = InventoryCategory.objects.all()
     
     # Get low stock items count

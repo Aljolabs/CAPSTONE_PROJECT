@@ -121,7 +121,7 @@
                                 <option value="tools">Tools</option>
                                 <option value="equipment">Equipment</option>     -->
                                 {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.get_name_display }}</option>
+                                <option value="{{ category.id }}">{{ category.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>

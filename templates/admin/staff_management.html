@@ -138,14 +138,15 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-sm btn-outline-primary edit-staff-btn" 
-                                                data-staff-id="{{ staff.id }}"
-                                                data-username="{{ staff.username }}"
-                                                data-email="{{ staff.email }}"
-                                                data-first-name="{{ staff.first_name }}"
-                                                data-last-name="{{ staff.last_name }}"
-                                                data-phone="{{ staff.profile.phone|default:'' }}"
-                                                data-is-active="{{ staff.is_active }}">
+                                        <button type="button" class="btn btn-sm btn-outline-primary edit-staff-btn"
+                                                id="{{ staff.id }}"
+                                                data-staff-id="{{ staff.staff.id }}"
+                                                data-username="{{ staff.staff.username }}"
+                                                data-email="{{ staff.staff.email }}"
+                                                data-first-name="{{ staff.staff.first_name }}"
+                                                data-last-name="{{ staff.staff.last_name }}"
+                                                data-phone="{{ staff.staff.profile.phone|default:'' }}"
+                                                data-is-active="{{ staff.staff.is_active }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
                                         {% if staff.is_active %}
@@ -363,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const firstName = this.getAttribute('data-first-name');
             const lastName = this.getAttribute('data-last-name');
             const phone = this.getAttribute('data-phone');
+            alert(username  )
             
             document.getElementById('edit_staff_id').value = staffId;
             document.getElementById('edit_username').value = username;

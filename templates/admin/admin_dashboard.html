@@ -558,9 +558,10 @@
                                 <div class="col-md-3">
                                     <div class="analytics-card bg-primary text-white">
                                         <div class="analytics-icon">
-                                            <i class="bi bi-calendar-year"></i>
+                                            <i class="bi bi-calendar-event"></i>
                                         </div>
                                         <div class="analytics-content">
+                                            <!-- <p class="mb-0">Total Bookings</p> -->
                                             <h3>{{ bookings_this_year }}</h3>
                                             <p class="mb-0">This Year</p>
                                         </div>
@@ -572,9 +573,10 @@
                                             <i class="bi bi-calendar-month"></i>
                                         </div>
                                         <div class="analytics-content">
+                                            <!-- <p class="mb-0">Total Bookings</p> -->
                                             <h3>{{ bookings_this_month }}</h3>
                                             <p class="mb-0">
-                                            {{ current_month }}
+                                            This {{ current_month }}
                                         </p>
                                         </div>
                                     </div>
@@ -586,6 +588,7 @@
                                         </div>
                                         <div class="analytics-content">
                                             <h3>{{ bookings_this_week }}</h3>
+                                            <!-- It Should be today might remove this week -->
                                             <p class="mb-0">This Week</p>
                                         </div>
                                     </div>
@@ -593,10 +596,10 @@
                                 <div class="col-md-3">
                                     <div class="analytics-card bg-warning text-white">
                                         <div class="analytics-icon">
-                                            <i class="bi bi-currency-dollar"></i>
+                                            <!-- <i class="bi bi-currency-dollar"></i> -->
                                         </div>
                                         <div class="analytics-content">
-                                            <h3>₱{{ monthly_revenue|floatformat:0 }}</h3>
+                                            <h3>₱ {{ monthly_revenue|floatformat:0 }}</h3>
                                             <p class="mb-0">Monthly Revenue</p>
                                         </div>
                                     </div>

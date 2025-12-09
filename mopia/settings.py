@@ -32,6 +32,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'pwa',
     'core',
 ]
 
@@ -70,6 +72,19 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+PWA_APP_NAME = "Mopia"
+PWA_APP_DESCRIPTION = 'Professional Cleaning Services'
+PWA_APP_THEME_COLOE = "#FFFFFF"
+PWA_APP_BACKGROUND_COLOR = "#FFFFFF"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_SCOPE = '/'
+PWA_APP_START_URL = '/'
+PWA_APP_ICONS = [{
+    "src": '/static/images/mopialogo.png',
+    "sizes": '192x192'
+}]
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
 
 ROOT_URLCONF = 'mopia.urls'
 
