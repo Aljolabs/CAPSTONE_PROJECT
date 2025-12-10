@@ -649,39 +649,71 @@ def admin_dashboard(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name='core_booking' AND column_name='created_at')")
             created_at_exists = cursor.fetchone()[0]
-        
-        # Get current date and time
-        # month_now = 1
-        # if request.GET.get("analytics_month"):
-        month_now = int(request.GET.get("analytics_month", datetime.now().month))
 
-        now = timezone.now().replace(month=month_now, day=1)
+        months = [
+            "January", "February", "March", "April", "May", "June", 
+            "July", "August", "September", "October", "November", "December"
+        ]
+
+        from_date_str = request.GET.get("from")
+        to_date_str = request.GET.get("to")
+
+        from_month = from_year = from_day = to_month = to_year = to_day = None
+
+        from_date = to_date = None
+
+        if from_date_str:
+            from_date = datetime.strptime(from_date_str, "%Y-%m-%d")
+            from_month = months[from_date.month - 1]
+            from_year = from_date.year
+            from_day = from_date.day
+
+        if to_date_str:
+            to_date = datetime.strptime(to_date_str, "%Y-%m-%d")
+            to_month = months[to_date.month - 1]
+            to_year = to_date.year
+            to_day = to_date.day
+
+        current_month = f"{from_month}" if from_month else ""
+        if to_month:
+            current_month += f" to {to_month}"
+
+        if from_month and to_month and from_month == to_month:
+            current_month = f"{from_month} {from_day} - {to_day}"
+            if from_day == to_day:
+                current_month = f"{from_month} {from_day}"
+
+        # Current datetime
+        now = timezone.now()
+
+        # For time-based analytics
+        # Use from_date as reference if exists, else now
+        ref_date = from_date or now
 
         # Basic stats
         total_bookings = Booking.objects.all().count()
         pending_bookings = Booking.objects.filter(status='pending').count()
         completed_bookings = Booking.objects.filter(status='completed').count()
 
-        # Time-based analytics
         # This Year
-        year_start = now.replace(month=month_now, day=1, hour=0, minute=0, second=0, microsecond=0)
+        year_start = ref_date.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
         if created_at_exists:
             bookings_this_year = Booking.objects.filter(created_at__gte=year_start).count()
         else:
             bookings_this_year = Booking.objects.filter(date__gte=year_start.date()).count()
-        
 
         # This Month
-        month_start = now.replace(month=month_now, day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = ref_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         last_day = calendar.monthrange(month_start.year, month_start.month)[1]
         month_end = month_start.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
-            
         if created_at_exists:
-            bookings_this_month = Booking.objects.filter(Q(created_at__gte=month_start) & Q(created_at__lte=month_end)).count()
+            bookings_this_month = Booking.objects.filter(
+                Q(created_at__gte=month_start) & Q(created_at__lte=month_end)
+            ).count()
         else:
-            bookings_this_month = Booking.objects.filter(date__gte=month_start.date()).count()
-        
-        bookings_this_month = bookings_this_month or 0
+            bookings_this_month = Booking.objects.filter(
+                date__gte=month_start.date(), date__lte=month_end.date()
+            ).count()
 
         # This Week
         week_start = now - timedelta(days=now.weekday())
@@ -690,50 +722,41 @@ def admin_dashboard(request):
             bookings_this_week = Booking.objects.filter(created_at__gte=week_start).count()
         else:
             bookings_this_week = Booking.objects.filter(date__gte=week_start.date()).count()
-        
-        # Monthly breakdown for the current year
+
+        # Monthly breakdown for the year
         monthly_bookings = []
-        for month in range(1, 13):
-            month_start = now.replace(month=month, day=1, hour=0, minute=0, second=0, microsecond=0)
-            if month == 12:
-                month_end = month_start.replace(year=month_start.year + 1, month=1)
-            else:
-                month_end = month_start.replace(month=month + 1)
-            
+        for m in range(1, 13):
+            month_start = ref_date.replace(month=m, day=1, hour=0, minute=0, second=0, microsecond=0)
+            last_day = calendar.monthrange(month_start.year, m)[1]
+            month_end = month_start.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
             if created_at_exists:
                 month_count = Booking.objects.filter(
-                    created_at__gte=month_start, 
-                    created_at__lt=month_end
+                    created_at__gte=month_start, created_at__lte=month_end
                 ).count()
             else:
                 month_count = Booking.objects.filter(
-                    date__gte=month_start.date(), 
-                    date__lt=month_end.date()
+                    date__gte=month_start.date(), date__lte=month_end.date()
                 ).count()
             monthly_bookings.append(month_count)
-        
+
         # Quarterly breakdown
         quarterly_bookings = []
         for quarter in range(4):
             q_start_month = quarter * 3 + 1
-            quarter_start = now.replace(month=q_start_month, day=1, hour=0, minute=0, second=0, microsecond=0)
+            quarter_start = ref_date.replace(month=q_start_month, day=1, hour=0, minute=0, second=0, microsecond=0)
             if quarter == 3:  # Q4
                 quarter_end = quarter_start.replace(year=quarter_start.year + 1, month=1)
             else:
                 quarter_end = quarter_start.replace(month=q_start_month + 3)
-            
             if created_at_exists:
                 quarter_count = Booking.objects.filter(
-                    created_at__gte=quarter_start,
-                    created_at__lt=quarter_end
+                    created_at__gte=quarter_start, created_at__lt=quarter_end
                 ).count()
             else:
                 quarter_count = Booking.objects.filter(
-                    date__gte=quarter_start.date(),
-                    date__lt=quarter_end.date()
+                    date__gte=quarter_start.date(), date__lt=quarter_end.date()
                 ).count()
             quarterly_bookings.append(quarter_count)
-        
         # Service popularity analytics
         service_bookings = Booking.objects.values('service__name').annotate(
             booking_count=Count('id')
@@ -822,18 +845,6 @@ def admin_dashboard(request):
         services = list(Service.objects.values_list('name', flat=True))
         location_bookings = Booking.objects.values("city", "barangay").annotate(total=Count("id")).order_by("-total")
         # print(recent_bookings.paginator)
-
-        months = [
-            "January", "February", "March", "April", "May", "June", 
-            "July", "August", "September", "October", "November", "December"
-        ]
-
-        current_month = months[month_start.month - 1]
-        if request.GET.get("analytics_month"):
-            current_month = months[int(request.GET.get("analytics_month")) - 1]
-
-        
-
 
         return render(request, 'admin/admin_dashboard.html', {
             'today': date.today().isoformat(),
