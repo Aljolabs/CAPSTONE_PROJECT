@@ -15,6 +15,7 @@ from decimal import Decimal  # Add this import for decimal calculations
 import json
 import secrets
 import calendar
+from datetime import date
 # import datetime
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -835,6 +836,7 @@ def admin_dashboard(request):
 
 
         return render(request, 'admin/admin_dashboard.html', {
+            'today': date.today().isoformat(),
             'current_month': current_month,
             'recent_bookings': recent_bookings,
             'customers': customers,

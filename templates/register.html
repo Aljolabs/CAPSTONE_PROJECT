@@ -282,7 +282,7 @@
                                 {{ form.password1 }}
                                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility('id_password1')">
                                     <!-- Hindi na kailangan kaya tinago ko muna -->
-                                    <!-- <i class="bi bi-eye"></i> -->
+                                    <i class="bi bi-eye"></i>
                                 </button>
                             </div>
                             <small class="password-hint">Must not exceed 11 characters</small>
@@ -299,7 +299,7 @@
                                 {{ form.password2 }}
                                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility('id_password2')">
                                     <!-- Hindi na kailangan kaya tinago ko muna -->
-                                    <!-- <i class="bi bi-eye"></i> -->
+                                    <i class="bi bi-eye"></i>   
                                 </button>
                             </div>
                             <div id="password-match" class="mt-2 d-none">
@@ -313,7 +313,7 @@
                     
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="termsCheck" required>
-                        <label class="form-check-label" for="termsCheck">I agree to the Terms of Service</label>
+                        <label class="form-check-label" for="termsCheck">I agree to the <u data-bs-toggle="modal" data-bs-target="#terms">Terms of Service</u></label>
                     </div>
                     
                     <button type="submit" class="btn btn-mopia w-100">Register</button>
@@ -340,12 +340,7 @@
                 <div class="mb-3">
                     <label for="modalProvince" class="form-label">Province</label>
                     <select id="modalProvince" class="form-select">
-                        <option value="">Select Province</option>
-                        <option value="Batangas">Batangas</option>
-                        <option value="Cavite">Cavite</option>
-                        <option value="Laguna">Laguna</option>
-                        <option value="Quezon">Quezon</option>
-                        <option value="Rizal">Rizal</option>
+                        <option disabled>Select Province</option>
                     </select>
                 </div>
 
@@ -353,7 +348,7 @@
                 <div class="mb-3 d-none" id="modalCityGroup">
                     <label for="modalCity" class="form-label">City/Municipality</label>
                     <select id="modalCity" class="form-select">
-                        <option value="">Select City/Municipality</option>
+                        <option selected disabled>Select City/Municipality</option>
                     </select>
                 </div>
 
@@ -361,7 +356,7 @@
                 <div class="mb-3 d-none" id="modalBarangayGroup">
                     <label for="modalBarangay" class="form-label">Barangay</label>
                     <select id="modalBarangay" class="form-select">
-                        <option value="">Select Barangay</option>
+                        <option selected disabled>Select Barangay</option>
                     </select>
                 </div>
 
@@ -379,37 +374,30 @@
     </div>
 </div>
 
+<!-- Terms and Condition Modal -->
+<div class="modal fade" id="terms" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Terms and Condition</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto fuga, quasi numquam impedit sed alias quibusdam quo omnis possimus doloribus ex neque dolorum, harum commodi, facilis unde cupiditate magnam ducimus!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         // Address data structure
-        const addressData = {
-            "Batangas": {
-                "Batangas City": ["Balagtas", "Banaba Center", "Banaba Kanluran", "Banaba Silangan"],
-                "Lipa City": ["Adya", "Anilao", "Antipolo del Norte", "Antipolo del Sur"],
-                "Tanauan City": ["Altura Bata", "Altura Matanda", "Ambulong", "Balele"]
-            },
-            "Cavite": {
-                "Bacoor": ["Alima", "Aniban I", "Aniban II", "Banalan"],
-                "Dasmariñas": ["Bagong Bayan I", "Bagong Bayan II", "Burol I", "Burol II"],
-                "Imus": ["Alapan I-A", "Alapan I-B", "Alapan II-A", "Alapan II-B"]
-            },
-            "Laguna": {
-                "Calamba": ["Bagong Kalsada", "Banadero", "Banlic", "Bañadero"],
-                "Los Baños": ["Anos", "Bagong Silang", "Bambang", "Batong Malake"],
-                "Santa Rosa": ["Aplaya", "Balibago", "Caingin", "Dila"]
-            },
-            "Quezon": {
-                "Lucena City": ["Barra", "Cotta", "Dalahican", "Ibabang Dupay"],
-                "Candelaria": ["Buenavista", "Bukal", "Kinatihan I", "Kinatihan II"],
-                "Tayabas": ["Alitao", "Alsam Ibaba", "Alsam Ilaya", "Angustias"]
-            },
-            "Rizal": {
-                "Antipolo": ["Bagong Nayon", "Beverly Hills", "Calawis", "Cupang"],
-                "Cainta": ["Dayap", "San Andres", "San Isidro", "Santo Domingo"],
-                "Taytay": ["Bagumbayan", "Dolores", "Muzon", "San Juan"]
-            }
-        };
-
+        const addressData = await fetchCalabarzon()
+        const addr = Object.keys(addressData)
+        
+        
         // Initialize Bootstrap modal
         let addressModal;
         
@@ -424,7 +412,7 @@
                 addressModal.show();
             });
         }
-
+        
         // Province change handler
         const modalProvince = document.getElementById('modalProvince');
         const modalCity = document.getElementById('modalCity');
@@ -434,14 +422,23 @@
         const modalStreet = document.getElementById('modalStreet');
         const modalStreetGroup = document.getElementById('modalStreetGroup');
         const saveAddressBtn = document.getElementById('saveAddressBtn');
+        
+        for(let calabarzon of addr){
+            if(calabarzon === "Quezon"){
+                const province = document.createElement("option")
+                province.value = calabarzon
+                province.textContent = calabarzon
+                province.selected = true
+                document.getElementById('modalProvince').appendChild(province)
+            }
+        }
 
         if (modalProvince) {
-            modalProvince.addEventListener('change', function() {
-                const selectedProvince = this.value;
+                const selectedProvince = "Quezon";
                 
                 // Reset dependent fields
-                modalCity.innerHTML = '<option value="">Select City/Municipality</option>';
-                modalBarangay.innerHTML = '<option value="">Select Barangay</option>';
+                modalCity.innerHTML = '<option selected disabled>Select City/Municipality</option>';
+                modalBarangay.innerHTML = '<option selected disabled>Select Barangay</option>';
                 modalStreet.value = '';
                 
                 if (selectedProvince && addressData[selectedProvince]) {
@@ -460,7 +457,6 @@
                     modalStreetGroup.classList.add('d-none');
                     saveAddressBtn.classList.add('d-none');
                 }
-            });
         }
 
         // City change handler
@@ -470,12 +466,13 @@
                 const selectedCity = this.value;
                 
                 // Reset dependent fields
-                modalBarangay.innerHTML = '<option value="">Select Barangay</option>';
+                modalBarangay.innerHTML = '<option seleccted disabled>Select Barangay</option>';
                 modalStreet.value = '';
                 
                 if (selectedCity && addressData[selectedProvince] && addressData[selectedProvince][selectedCity]) {
                     // Populate barangays
-                    addressData[selectedProvince][selectedCity].forEach(barangay => {
+                    const brgy = addressData[selectedProvince][selectedCity].sort()
+                    brgy.forEach(barangay => {
                         const option = document.createElement('option');
                         option.value = barangay;
                         option.textContent = barangay;
@@ -688,5 +685,11 @@
             });
         }
     });
+
+    async function fetchCalabarzon(){
+        const region = await fetch("http://127.0.0.1:8000/static/brgy.json")
+        const calabarzon= await region.json()
+        return calabarzon
+    }
 </script>
 {% endblock %}

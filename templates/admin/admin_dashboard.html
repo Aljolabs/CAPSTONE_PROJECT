@@ -532,7 +532,20 @@
                         </div>
                         <div class="card-body">
                             <!-- Time-based Analytics -->
-                            <div class="dropdown">
+                            
+
+                            <div class="mb-3">
+                                <form onchange="this.submit()">
+                                    <label>From: 
+                                        <input value="{{ request.GET.from|default:'' }}" onchange="this.form.submit()" type="date" class="form-calendar form-control" id="frm" name="from" max="{{ today }}">
+                                    </label>
+                                    <label>To: 
+                                        <input value="{{ request.GET.to|default:'' }}" onchange="this.form.submit()" type="date" class="form-calendar form-control" id="to" name="to" max="{{ today }}" {% if not request.GET.from %}disabled{% endif %} min="{{ request.GET.from|default:'' }}">
+                                    </label>
+                                </form>
+                            </div>
+
+                            <!-- <div class="dropdown">
                                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-calendar-event me-1"></i>
                                     Month: {{ current_month }}
@@ -552,7 +565,7 @@
                                     <li><a class="dropdown-item" href="?analytics_month=11">November</a></li>
                                     <li><a class="dropdown-item" href="?analytics_month=12">December</a></li>
                                 </ul>
-                            </div>
+                            </div> -->
 
                             <div class="row mb-4">
                                 <div class="col-md-3">
