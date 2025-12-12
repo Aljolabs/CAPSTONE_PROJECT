@@ -534,7 +534,7 @@
                             <!-- Time-based Analytics -->
                             
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <form onchange="this.submit()">
                                     <label>From: 
                                         <input value="{{ request.GET.from|default:'' }}" onchange="this.form.submit()" type="date" class="form-calendar form-control" id="frm" name="from" max="{{ today }}">
@@ -543,7 +543,7 @@
                                         <input value="{{ request.GET.to|default:'' }}" onchange="this.form.submit()" type="date" class="form-calendar form-control" id="to" name="to" max="{{ today }}" {% if not request.GET.from %}disabled{% endif %} min="{{ request.GET.from|default:'' }}">
                                     </label>
                                 </form>
-                            </div>
+                            </div> -->
 
                             <!-- <div class="dropdown">
                                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -589,7 +589,8 @@
                                             <!-- <p class="mb-0">Total Bookings</p> -->
                                             <h3>{{ bookings_this_month }}</h3>
                                             <p class="mb-0">
-                                            This {{ current_month }}
+                                            <!-- This {{ current_month }} -->
+                                             This Month
                                         </p>
                                         </div>
                                     </div>
@@ -622,7 +623,7 @@
                             <!-- Graph for analytics -->
                             <!-- Search Chartjs to navigate  -->
                             <div class="row mb-4">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="analytics-card h-100 align-items-end">
                                         <canvas id="bar"></canvas>
                                     </div>
@@ -864,7 +865,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function generateGraph(id, type, data, label = ""){
-        /*
+        /*s
         * This is the format
         * id:   comes from the <canvas id='the_id_here'></canvas>
         * type: graph type -> bar, line pie and such
@@ -884,13 +885,13 @@
             }]
             },
             options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
-    });
+        });
     }
 </script>
 
@@ -910,10 +911,14 @@
         "July", "August", "September", "October", "November", "December"
     ]
 
+    console.log(service_bookings)
     generateGraph("bar", "bar", {
-        "label": services,
+        "label": service_bookings.service,
         "value": service_bookings.total,
-    }, "Boookings for month of {{ current_month }}")
+    }, 
+    // "Boookings for month of {{ current_month }}"
+    "No. of Booked Services"
+)
 
     generateGraph("line", "line", {
         "label": months,

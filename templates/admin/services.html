@@ -188,7 +188,7 @@
                 <input type="text" class="form-control" id="service-duration" name="duration" placeholder="e.g. 2 hours, 4-6 hours">
             </div>
             
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label class="form-label">Materials & Equipment</label>
                 {% for material in materials %}
                 <div>
@@ -198,7 +198,7 @@
                     </label>
                 </div>
                 {% endfor %}
-            </div>
+            </div> -->
             
             <div class="mb-3">
                 <label for="service-staff" class="form-label">Staff Count</label>
@@ -374,11 +374,12 @@
                 const staff = this.getAttribute('data-staff');
                 const description = this.getAttribute('data-description');
                 
+                
                 document.getElementById('service-id').value = id;
                 document.getElementById('service-name').value = name;
                 document.getElementById('service-price').value = price;
                 document.getElementById('service-duration').value = duration || '';
-                document.getElementById('service-materials').value = materials || '';
+                // document.getElementById('service-materials').value = materials || '';
                 document.getElementById('service-staff').value = staff || '1';
                 document.getElementById('service-description').value = description;
                 

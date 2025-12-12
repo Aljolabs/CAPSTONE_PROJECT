@@ -580,15 +580,15 @@
                 e.preventDefault();
 
                 // Collect form data
-                const bookingData = {
-                    service: document.getElementById('service').value,
-                    date: document.getElementById('date').value,
-                    time: document.getElementById('time').value,
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    address: document.getElementById('address').value,
-                };
+                // const bookingData = {
+                //     service: document.getElementById('service').value,
+                //     date: document.getElementById('date').value,
+                //     time: document.getElementById('time').value,
+                //     name: document.getElementById('name').value,
+                //     email: document.getElementById('email').value,
+                //     phone: document.getElementById('phone').value,
+                //     address: document.getElementById('address').value,
+                // };
 
                 // Validate all fields are filled
                 if (!bookingData.service || !bookingData.date || !bookingData.time || 
@@ -598,7 +598,7 @@
                 }
 
                 // Store data in localStorage
-                localStorage.setItem('tempBooking', JSON.stringify(bookingData));
+                // localStorage.setItem('tempBooking', JSON.stringify(bookingData));
 
                 // Redirect to login
                 window.location.href = "{% url 'login' %}";

@@ -6,6 +6,18 @@
 
 {% block extra_css %}
 <style>
+    /* FOR HIGHLIGHTING THE TERMS OF SERVICE */
+    label u{
+    color:#0d6efd;   /* highlight color */
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    }
+
+    label u:hover {
+    color: #0a58ca;    /* hover shade */
+    }
+
     /* Keep existing styles */
     .register-container {
         max-width: 600px;
@@ -383,7 +395,139 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto fuga, quasi numquam impedit sed alias quibusdam quo omnis possimus doloribus ex neque dolorum, harum commodi, facilis unde cupiditate magnam ducimus!
+                <!-- Insert your full T&C text here -->
+      <h3><strong>MOPIA ProClean – Terms and Conditions</strong></h3>
+
+      <h3>Introduction</h3>
+      <p>
+        Welcome to <strong>MOPIA ProClean</strong>, a Progressive Web App (PWA) designed for efficient service 
+        coordination, logistics management, staff deployment, and AI-Based Smart Scheduling. By creating an 
+        account or using this platform, you acknowledge that you have read and agreed to these Terms and Conditions.
+      </p>
+
+      <h3>1. User Accounts and Responsibilities</h3>
+
+      <h4>1.1 Account Creation</h4>
+      <ul>
+        <li>Users must provide accurate and up-to-date information.</li>
+        <li>Staff and admin accounts are issued by the company for authorized use only.</li>
+      </ul>
+
+      <h4>1.2 User Obligations</h4>
+      <strong>Users agree to:</strong>
+      <ul>
+        <li>Provide truthful information.</li>
+        <li>Secure their login credentials.</li>
+        <li>Report unauthorized activity.</li>
+        <li>Avoid disruptive actions.</li>
+      </ul>
+
+
+
+      <h3>2. Booking Policies</h3>
+
+      <h4>2.1 Service Booking</h4>
+      <p>
+        Customers may book services by selecting available schedules and completing required details.
+      </p>
+
+      <h4>2.2 Booking Confirmation</h4>
+      <p>A booking is confirmed once the admin approves it and a <strong>40% down payment</strong> is submitted.</p>
+
+      <h4>2.3 Cancellation Policy</h4>
+      <p>
+        If the customer cancels <strong>after confirmation</strong>, the 40% down payment is strictly 
+        <strong>NON-REFUNDABLE</strong>.
+      </p>
+      <p>Rescheduling may be allowed depending on availability.</p>
+
+      <h3>3. Payment Terms</h3>
+      <ul>
+        <li>40% down payment is required to confirm booking.</li>
+        <li>Accepted payment methods include digital payments and bank transfers.</li>
+        <li>Refunds are issued only if the company cancels the service.</li>
+        <li>Remaining balance is paid after service completion.</li>
+      </ul>
+
+      <h3>4. Data Collection and Use</h3>
+
+      <h4>What We Collect:</h4>
+      <ul>
+        <li>Name, contact info, and address</li>
+        <li>Booking and service details</li>
+        <li>Feedback and reviews</li>
+        <li>System usage patterns (AI optimization)</li>
+      </ul>
+
+      <h4>How We Use Your Data:</h4>
+      <ul>
+        <li>Process bookings</li>
+        <li>Assign staff and manage logistics</li>
+        <li>Optimize scheduling via AI</li>
+        <li>Improve customer experience</li>
+        <li>Send reminders and notifications</li>
+        <li>Generate analytics</li>
+      </ul>
+
+      <p>
+        Data is <strong>never shared or sold</strong> to third parties except when required by law.
+      </p>
+
+      <h3>5. Data Protection and Security</h3>
+      <ul>
+        <li>Encrypted data storage</li>
+        <li>Role-based access for staff/admins</li>
+        <li>Regular security monitoring</li>
+        <li>Protection against unauthorized access</li>
+      </ul>
+
+      <h3>6. AI-Based Smart Scheduling Policy</h3>
+      <ul>
+        <li>Analyzes booking patterns and staff availability</li>
+        <li>Suggests optimal scheduling</li>
+        <li>Improves operational efficiency</li>
+        <li>No external sharing of processed data</li>
+      </ul>
+
+      <h3>7. Service Limitations</h3>
+      <p>Schedules may change due to:</p>
+      <ul>
+        <li>Staff shortage</li>
+        <li>Health/safety concerns</li>
+        <li>Weather conditions</li>
+        <li>System maintenance or downtime</li>
+      </ul>
+
+      <p>Users may reschedule without extra charges if changes are initiated by the company.</p>
+
+      <h3>8. Feedback and User Content</h3>
+      <ul>
+        <li>Feedback may be stored and analyzed to improve services.</li>
+        <li>May be displayed publicly only with user consent.</li>
+        <li>AI insights will not disclose personal identifiers.</li>
+      </ul>
+
+      <h3>9. Prohibited Activities</h3>
+      <ul>
+        <li>Submitting false information</li>
+        <li>System tampering or hacking</li>
+        <li>Unauthorized data access</li>
+        <li>Impersonation of other users or staff</li>
+      </ul>
+
+      <h3>10. Business Policies and Liability</h3>
+      <ul>
+        <li>Company is not liable for damages caused by user negligence.</li>
+        <li>Temporary downtime may occur.</li>
+        <li>40% down payment is non-refundable for customer cancellations.</li>
+      </ul>
+
+      <h3>11. Updates to Terms and Conditions</h3>
+      <p>
+        MOPIA ProClean may update these terms anytime. Users will be notified of major revisions. Continued 
+        use of the platform means acceptance of updated terms.
+      </p>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

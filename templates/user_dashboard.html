@@ -1176,17 +1176,13 @@
                                             <div class="modal-body">
 
                                                 <!-- Province -->
-                                                <!-- <div class="mb-3">
+                                                <div class="mb-3">
                                                     <label for="modalProvince" class="form-label">Province</label>
                                                     <select id="modalProvince" class="form-select">
                                                         <option value="">Select Province</option>
-                                                        <option value="Batangas">Batangas</option>
-                                                        <option value="Cavite">Cavite</option>
-                                                        <option value="Laguna">Laguna</option>
-                                                        <option value="Quezon">Quezon</option>
-                                                        <option value="Rizal">Rizal</option>
+                                                        
                                                     </select>
-                                                </div> -->
+                                                </div>
 
                                                 <!-- City -->
                                                 <div class="mb-3" id="modalCityGroup">
@@ -2202,7 +2198,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Address management functionality
-    const changeAddressBtn = document.getElementById('change-address-btn');
+    // const changeAddressBtn = document.getElementById('change-address-btn');
     const addressModal = new bootstrap.Modal(document.getElementById('addressSelectionModal'));
     const toggleNewAddressBtn = document.getElementById('toggle-new-address');
     const newAddressForm = document.getElementById('new-address-form');
@@ -2221,10 +2217,10 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     
     // Show address selection modal
-    changeAddressBtn.addEventListener('click', function() {
-        loadSavedAddresses();
-        addressModal.show();
-    });
+    // changeAddressBtn.addEventListener('click', function() {
+    //     loadSavedAddresses();
+    //     addressModal.show();
+    // });
     
     // Toggle new address form
     toggleNewAddressBtn.addEventListener('click', function() {
@@ -2386,28 +2382,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update selected address display
     function updateSelectedAddress(id, type, address) {
-        const currentAddressText = document.getElementById('current-address-text');
+        // const currentAddressText = document.getElementById('current-address-text');
         const selectedAddressId = document.getElementById('selected-address-id');
         const addressTextarea = document.getElementById('address');
         
         // Update display
-        currentAddressText.textContent = address;
+        // currentAddressText.textContent = address;
         selectedAddressId.value = id;
         addressTextarea.value = address;
         
         // Update badge and label
-        const badge = document.querySelector('#selected-address-display .badge');
-        const label = document.querySelector('#selected-address-display h6');
+        // const badge = document.querySelector('#selected-address-display .badge');
+        // const label = document.querySelector('#selected-address-display h6');
         
-        if (id === 'default') {
-            badge.className = 'badge bg-primary me-2';
-            badge.textContent = 'Default';
-            label.textContent = 'Home Address';
-        } else {
-            badge.className = 'badge bg-success me-2';
-            badge.textContent = type;
-            label.textContent = `${type} Address`;
-        }
+        // if (id === 'default') {
+        //     badge.className = 'badge bg-primary me-2';
+        //     badge.textContent = 'Default';
+        //     label.textContent = 'Home Address';
+        // } else {
+        //     badge.className = 'badge bg-success me-2';
+        //     badge.textContent = type;
+        //     label.textContent = `${type} Address`;
+        // }
     }
     
     // Toast notification function
@@ -2495,7 +2491,6 @@ document.addEventListener('DOMContentLoaded', function() {
 const date = document.getElementById("date")
 const today = new Date().toISOString().split('T')[0]
 date.setAttribute("min", today)
-
 date.onchange = () => {
     const time = document.getElementById("time")
     time.innerHTML = "<option value='' selected disabled>Select a time</option>"
@@ -2514,7 +2509,7 @@ date.onchange = () => {
             console.log(t)
             opt.textContent = t[1]
             // For knowing if time past by
-            
+
             const current = new Date()
             const timer = new Date(`${today} ${t[0]}`)
             if(current.getTime() <= timer.getTime()){
@@ -2541,4 +2536,164 @@ date.onchange = () => {
 </script>   
 
 
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Address data structure
+        const addressData = await fetchCalabarzon()
+        const addr = Object.keys(addressData)
+        
+        
+        // Initialize Bootstrap modal
+        let addressModal;
+        
+        // Address field click handler
+        const addressField = document.getElementById('address');
+        if (addressField) {
+            addressField.addEventListener('click', function() {
+                // Initialize modal if not already done
+                if (!addressModal) {
+                    addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
+                }
+                addressModal.show();
+            });
+        }
+        
+        // Province change handler
+        const modalProvince = document.getElementById('modalProvince');
+        const modalCity = document.getElementById('modalCity');
+        const modalCityGroup = document.getElementById('modalCityGroup');
+        const modalBarangay = document.getElementById('modalBarangay');
+        const modalBarangayGroup = document.getElementById('modalBarangayGroup');
+        const modalStreet = document.getElementById('modalStreet');
+        const modalStreetGroup = document.getElementById('modalStreetGroup');
+        const saveAddressBtn = document.getElementById('saveAddressBtn');
+        
+        for(let calabarzon of addr){
+            if(calabarzon === "Quezon"){
+                const province = document.createElement("option")
+                province.value = calabarzon
+                province.textContent = calabarzon
+                province.selected = true
+                document.getElementById('modalProvince').appendChild(province)
+            }
+        }
+
+
+        if (modalProvince) {
+                const selectedProvince = "Quezon";
+                
+                // Reset dependent fields
+                modalCity.innerHTML = '<option selected disabled>Select City/Municipality</option>';
+                modalBarangay.innerHTML = '<option selected disabled>Select Barangay</option>';
+                modalStreet.value = '';
+                
+                if (selectedProvince && addressData[selectedProvince]) {
+                    // Populate cities
+                    Object.keys(addressData[selectedProvince]).forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        modalCity.appendChild(option);
+                    });
+                    
+                    modalCityGroup.classList.remove('d-none');
+                } else {
+                    modalCityGroup.classList.add('d-none');
+                    modalBarangayGroup.classList.add('d-none');
+                    modalStreetGroup.classList.add('d-none');
+                    saveAddressBtn.classList.add('d-none');
+                }
+        }
+
+
+        // City change handler
+        if (modalCity) {
+            modalCity.addEventListener('change', function() {
+                const selectedProvince = modalProvince.value;
+                const selectedCity = this.value;
+                
+                // Reset dependent fields
+                modalBarangay.innerHTML = '<option seleccted disabled>Select Barangay</option>';
+                modalStreet.value = '';
+                
+                if (selectedCity && addressData[selectedProvince] && addressData[selectedProvince][selectedCity]) {
+                    // Populate barangays
+                    const brgy = addressData[selectedProvince][selectedCity].sort()
+                    brgy.forEach(barangay => {
+                        const option = document.createElement('option');
+                        option.value = barangay;
+                        option.textContent = barangay;
+                        modalBarangay.appendChild(option);
+                    });
+                    
+                    modalBarangayGroup.classList.remove('d-none');
+                } else {
+                    modalBarangayGroup.classList.add('d-none');
+                    modalStreetGroup.classList.add('d-none');
+                    saveAddressBtn.classList.add('d-none');
+                }
+            });
+        }
+
+
+        // Barangay change handler
+        if (modalBarangay) {
+            modalBarangay.addEventListener('change', function() {
+                if (this.value) {
+                    modalStreetGroup.classList.remove('d-none');
+                } else {
+                    modalStreetGroup.classList.add('d-none');
+                    saveAddressBtn.classList.add('d-none');
+                }
+            });
+        }
+
+
+        // Street input handler
+        if (modalStreet) {
+            modalStreet.addEventListener('input', function() {
+                if (this.value.trim() && modalBarangay.value) {
+                    saveAddressBtn.classList.remove('d-none');
+                } else {
+                    saveAddressBtn.classList.add('d-none');
+                }
+            });
+        }
+
+
+        // Save address handler
+        if (saveAddressBtn) {
+            saveAddressBtn.addEventListener('click', function() {
+                const province = modalProvince.value;
+                const city = modalCity.value;
+                const barangay = modalBarangay.value;
+                const street = modalStreet.value.trim();
+                
+                if (province && city && barangay && street) {
+                    // Combine address
+                    const fullAddress = `${street}, ${barangay}, ${city}, ${province}`;
+                    
+                    // Update main address field
+                    addressField.value = fullAddress;
+                    
+                    // Update hidden fields
+                    document.getElementById('hidden_province').value = province;
+                    document.getElementById('hidden_city').value = city;
+                    document.getElementById('hidden_barangay').value = barangay;
+                    document.getElementById('hidden_street').value = street;
+                    
+                    // Close modal
+                    if (addressModal) {
+                        addressModal.hide();
+                    }
+                }
+            });
+        }
+})
+async function fetchCalabarzon(){
+        const region = await fetch("http://127.0.0.1:8000/static/brgy.json")
+        const calabarzon= await region.json()
+        return calabarzon
+    }
+</script>
 {% endblock %}

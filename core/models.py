@@ -17,7 +17,7 @@ class Service(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='customer')
     name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     phone = models.CharField(max_length=20, blank=False, null=False)  # Required for customers
     address = models.TextField(blank=False, null=False)  # Required for customers
     

@@ -111,6 +111,7 @@ def contact(request):
 def booking_submit(request):
     """Submit a booking and associate it with the current user if authenticated"""
     # Get all required fields
+    print("hihi")
     service_id = request.POST.get('service')
     date = request.POST.get('date')
     time = request.POST.get('time')
@@ -130,6 +131,7 @@ def booking_submit(request):
     reference_number = request.POST.get('reference_number')
     
     # Validate all required fields are present
+    print(request.POST)
     if not all([service_id, date, time, name, email, phone, address, payment_method, reference_number]):
         if request.headers.get('Content-Type') == 'application/x-www-form-urlencoded' or 'multipart/form-data' in request.headers.get('Content-Type', ''):
             # AJAX request - return JSON error
@@ -146,10 +148,12 @@ def booking_submit(request):
         # Create or update customer
         if not request.user.is_authenticated:
             raise Exception("User is not logged in")
-        customers = Customer.objects.get(user__exact=request.user)
-        # print(customers)
+        print('1')
+        customers = Customer.objects.filter(user=request.user).first()
+        print('2')
+        print(customers)
         if customers == None:
-            customer, created = Customer.objects.create(
+            customer, created = Customer.objects.get_or_create(
                 email=email,
                 defaults={
                     'name': name,
@@ -233,6 +237,7 @@ def booking_submit(request):
             return redirect('booking_confirmation', booking_id=booking.id)
     
     except Exception as e:
+        print('Booking submit err, ', str(e))
         error_msg = f"Error processing booking: {str(e)}"
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'multipart/form-data' in request.headers.get('Content-Type', ''):
             return JsonResponse({'success': False, 'error': error_msg}, status=500)
@@ -760,9 +765,11 @@ def admin_dashboard(request):
         # Service popularity analytics
         service_bookings = Booking.objects.values('service__name').annotate(
             booking_count=Count('id')
-        ).order_by('-booking_count')
+        ).order_by("-booking_count")
 
         print(service_bookings)
+
+        
 
         result_book = {
             "service": [item['service__name'] for item in service_bookings],
@@ -843,6 +850,19 @@ def admin_dashboard(request):
         
         customers = Customer.objects.all()
         services = list(Service.objects.values_list('name', flat=True))
+        # current_service_data = services
+        # services =  []
+        # print("start")
+        # for key, pk in current_service_data:
+        #     print(key)
+        #     print(pk)
+        #     services.append({
+        #         [key]: pk
+        #     })
+        # print("end")
+        # services = {item['service__name']: item['booking_count'] for item in current_service_data}
+        # print(services)
+
         location_bookings = Booking.objects.values("city", "barangay").annotate(total=Count("id")).order_by("-total")
         # print(recent_bookings.paginator)
 
