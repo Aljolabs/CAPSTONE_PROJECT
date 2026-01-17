@@ -589,8 +589,8 @@
                                             <!-- <p class="mb-0">Total Bookings</p> -->
                                             <h3>{{ bookings_this_month }}</h3>
                                             <p class="mb-0">
-                                            <!-- This {{ current_month }} -->
-                                             This Month
+                                            This {{ current_month|default:'Month' }}
+                                             <!-- This Month -->
                                         </p>
                                         </div>
                                     </div>
